@@ -7,10 +7,13 @@
 #' the 'estimate' method, but the beta_mc is thresholded.
 #' @param method.filter multiple adjustment method to use in thresholding of the coefficient (see p.adjust)
 #' @param method.test multiple adjustment method  to use when testing the adjusted coefficients (see p.adjust)
+#' @param method.threshold which type of threshold to apply on the covariance matrix, currently supports `soft`, `hard` and `none`. Default to `soft`.
+#' @param cv.threshold the number of repetitions for 2-fold random cross validations for each threshold value.
+#' @param threshold.cov.seq user-defined threshold value. If it is a vector of regularization values, it automatically selects one that minimizes cross validation risk.
 #' @param qu P-value threshold.
 #' @param explained.omega.beta Minimal weight for thresholding omega.beta
 #' @param max.omega.beta Maximum number of cofficients taken from omega.beta
-#' @param is.scaled Boolean flag, is original study X and y are scaled. For now only supports TRUE.
+# @param is.scaled Boolean flag, is original study X and y are scaled. For now only supports TRUE.
 #' @return list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value
 #' `test.naive` data.frame with the adjusted coefficeint but not adjusted variance, with two sided testing p-value,
 #'  `add.var` the additional variance, `sigma` the estimated sigma, and
@@ -25,13 +28,14 @@ analyzeRef <- function(marg.beta.hat,
                        method.filter        = 'none',
                        method.test          = 'BH',
                        method.threshold     = 'soft',
+                       cv.threshold         = 5,
+                       threshold.cov.seq    = seq(10^(-5), 0.2, 0.05),
                        qu                   = 0.05,
                        explained.omega.beta = 0.9,
-                       max.omega.beta       = 20,
-                       is.scaled            = TRUE) {
+                       max.omega.beta       = 20) {
   p   <- ncol(x.r)
   n.r <- nrow(x.r)
-  cov.list.r    <- covMatMaker(x.r,is.scaled)
+  cov.list.r    <- covMatMaker(x.r, method.threshold, cv.threshold, threshold.cov.seq)
   marg.to.joint <- marginalToJoint(marg.beta.hat = marg.beta.hat,
                                    x.r = x.r,
                                    n.o = n.o,
@@ -131,18 +135,29 @@ testCoef <- function(est.beta, var.beta, method = 'BH') {
 #' covMatMakter - calculates covariance matrix
 #' @param x.r Reference panel
 #' @param is.scaled Flag, was the data scaled beforehand, currently package only support TRUE
+#' @param method.threshold which type of threshold to apply on the covariance matrix, currently supports `soft`, `hard` and `none`. Default to `soft`.
+#' @param cv.threshold the number of repetitions for 2-fold random cross validations for each threshold value.
 #' @return list of covariance matrix and inverse covariance matrix
 #' @export
 
-covMatMaker <- function(x.r, is.scaled = TRUE) {
+covMatMaker <- function(x.r, method.threshold, cv.threshold, threshold.seq) {
   n.r <- nrow(x.r)
-  if (is.scaled) {
-    cov.r    <- t(x.r) %*% x.r / (n.r - 1) ## Scaled, mean = 0.
-    inv.r    <- (n.r - 1) * solve(t(x.r) %*% x.r)
+  if (method.threshold == 'soft') {
+    threshold.para <- CovTools::CovEst.soft(x.r, thr = threshold.seq, nCV = cv.threshold)
+    cov.r        <- threshold.para$S
+    inv.r        <- solve(cov.r)
   }
-  if (!is.scaled) {
-    cov.r    <- cov(x.r)
-    inv.r    <- solve(cov(x.r))
+  if (method.threshold == 'hard') {
+    threshold.para <- CovTools::CovEst.hard(x.r, thr = threshold.seq, nCV = cv.threshold)
+    cov.r        <- threshold.para$S
+    inv.r          <- solve(cov.r)
+  }
+  if (method.threshold == 'none') {
+    cov.r        <- cov(x.r)
+    inv.r        <- solve(cov.r)
+  }
+  if (!(method.threshold %in% c('soft', 'hard', 'none'))) {
+    stop('method.threshold must be one of soft/hard/none')
   }
   return(list('cov'   = cov.r,
               'omega' = inv.r))
