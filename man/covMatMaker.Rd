@@ -4,10 +4,14 @@
 \alias{covMatMaker}
 \title{covMatMakter - calculates covariance matrix}
 \usage{
-covMatMaker(x.r, is.scaled = TRUE)
+covMatMaker(x.r, method.threshold, cv.threshold, threshold.seq)
 }
 \arguments{
 \item{x.r}{Reference panel}
+
+\item{method.threshold}{which type of threshold to apply on the covariance matrix, currently supports `soft`, `hard` and `none`. Default to `soft`.}
+
+\item{cv.threshold}{the number of repetitions for 2-fold random cross validations for each threshold value.}
 
 \item{is.scaled}{Flag, was the data scaled beforehand, currently package only support TRUE}
 }
