@@ -63,3 +63,49 @@ test_that("Function runs with various parameters", {
                                                 qu = 0.05,
                                                 explained.omega.beta = 0.5)$var.omega.beta[2] > 0.5)
 })
+
+
+
+test_that("Functions works with all various options of regularization", {
+  x.r <- matrix(rnorm(1000), ncol = 10, nrow = 100)
+  testthat::expect_true(ECCCM::analyzeRef(marg.beta.hat = rep(1, 10),
+                                          x.r = x.r,
+                                          n.o = 100,
+                                          sigma.method = 'conservative',
+                                          method.filter = 'none',
+                                          method.test = 'BH',
+                                          method.threshold = 'none',
+                                          qu = 0.05,
+                                          explained.omega.beta = 0.5)$var.omega.beta[2] > 0.5)
+
+  testthat::expect_true(ECCCM::analyzeRef(marg.beta.hat = rep(1, 10),
+                                          x.r = x.r,
+                                          n.o = 100,
+                                          sigma.method = 'conservative',
+                                          method.filter = 'none',
+                                          method.test = 'BH',
+                                          method.threshold = 'soft',
+                                          qu = 0.05,
+                                          explained.omega.beta = 0.5)$var.omega.beta[2] > 0.5)
+
+  testthat::expect_true(ECCCM::analyzeRef(marg.beta.hat = rep(1, 10),
+                                          x.r = x.r,
+                                          n.o = 100,
+                                          sigma.method = 'conservative',
+                                          method.filter = 'none',
+                                          method.test = 'BH',
+                                          method.threshold = 'hard',
+                                          qu = 0.05,
+                                          explained.omega.beta = 0.5)$var.omega.beta[2] > 0.5)
+
+  testthat::expect_error(ECCCM::analyzeRef(marg.beta.hat = rep(1, 10),
+                                           x.r = x.r,
+                                           n.o = 100,
+                                           sigma.method = 'conservative',
+                                           method.filter = 'none',
+                                           method.test = 'BH',
+                                           method.threshold = 'nonsense',
+                                           qu = 0.05,
+                                           explained.omega.beta = 0.5))
+})
+
