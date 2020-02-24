@@ -13,20 +13,8 @@ findCovVar <- function(list_cov_mat, cov_mat) {
     .Call(`_ECCCM_findCovVar`, list_cov_mat, cov_mat)
 }
 
-findCovBayes_old <- function(list_cov_mat, cov_mat, delta_gamma, only_diag) {
-    .Call(`_ECCCM_findCovBayes_old`, list_cov_mat, cov_mat, delta_gamma, only_diag)
-}
-
 findCovBayes <- function(list_cov_mat, cov_mat, delta_gamma) {
     .Call(`_ECCCM_findCovBayes`, list_cov_mat, cov_mat, delta_gamma)
-}
-
-varFirstTerm <- function(beta, omega, list_cov_mat, ind) {
-    .Call(`_ECCCM_varFirstTerm`, beta, omega, list_cov_mat, ind)
-}
-
-varSecondTerm <- function(omega_beta, list_cov_mat, ind) {
-    .Call(`_ECCCM_varSecondTerm`, omega_beta, list_cov_mat, ind)
 }
 
 findCovByInd <- function(x, ind) {
@@ -37,11 +25,19 @@ findCovTwoInd <- function(x, ind_a, ind_b) {
     .Call(`_ECCCM_findCovTwoInd`, x, ind_a, ind_b)
 }
 
-varFirstTermNew <- function(beta, omega, x, ind) {
-    .Call(`_ECCCM_varFirstTermNew`, beta, omega, x, ind)
+varFirstTerm <- function(beta, omega, x, ind) {
+    .Call(`_ECCCM_varFirstTerm`, beta, omega, x, ind)
 }
 
-varSecondTermNew <- function(omega_beta, x, ind) {
-    .Call(`_ECCCM_varSecondTermNew`, omega_beta, x, ind)
+varSecondTerm <- function(omega_beta, x, ind) {
+    .Call(`_ECCCM_varSecondTerm`, omega_beta, x, ind)
+}
+
+quadForm <- function(x, S) {
+    .Call(`_ECCCM_quadForm`, x, S)
+}
+
+addVarGauss <- function(cov_mat, omega, beta, n_r, n_o) {
+    .Call(`_ECCCM_addVarGauss`, cov_mat, omega, beta, n_r, n_o)
 }
 

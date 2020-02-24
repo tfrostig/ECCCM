@@ -109,3 +109,18 @@ test_that("Functions works with all various options of regularization", {
                                            explained.omega.beta = 0.5))
 })
 
+test_that("Function runs with various parameters", {
+  x.r <- matrix(rnorm(1000), ncol = 10, nrow = 100)
+  cov.mat <- cov(x.r)
+  testthat::expect_true(class(ECCCM::analyzeRefGauss(marg.beta.hat = rep(0.1, 10),
+                                                     ld.mat = cov.mat,
+                                                     n.o = 100,
+                                                     sigma.method = 'semi.conservative',
+                                                     method.filter = 'BH',
+                                                     method.test = 'BH',
+                                                     qu = 0.05)) == 'list')
+})
+
+
+
+

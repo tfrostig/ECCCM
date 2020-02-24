@@ -42,20 +42,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// findCovBayes_old
-arma::mat findCovBayes_old(List list_cov_mat, arma::mat cov_mat, arma::mat delta_gamma, bool only_diag);
-RcppExport SEXP _ECCCM_findCovBayes_old(SEXP list_cov_matSEXP, SEXP cov_matSEXP, SEXP delta_gammaSEXP, SEXP only_diagSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type list_cov_mat(list_cov_matSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type delta_gamma(delta_gammaSEXP);
-    Rcpp::traits::input_parameter< bool >::type only_diag(only_diagSEXP);
-    rcpp_result_gen = Rcpp::wrap(findCovBayes_old(list_cov_mat, cov_mat, delta_gamma, only_diag));
-    return rcpp_result_gen;
-END_RCPP
-}
 // findCovBayes
 arma::mat findCovBayes(List list_cov_mat, arma::mat cov_mat, arma::mat delta_gamma);
 RcppExport SEXP _ECCCM_findCovBayes(SEXP list_cov_matSEXP, SEXP cov_matSEXP, SEXP delta_gammaSEXP) {
@@ -66,33 +52,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type delta_gamma(delta_gammaSEXP);
     rcpp_result_gen = Rcpp::wrap(findCovBayes(list_cov_mat, cov_mat, delta_gamma));
-    return rcpp_result_gen;
-END_RCPP
-}
-// varFirstTerm
-arma::mat varFirstTerm(arma::vec beta, arma::mat omega, List list_cov_mat, arma::vec ind);
-RcppExport SEXP _ECCCM_varFirstTerm(SEXP betaSEXP, SEXP omegaSEXP, SEXP list_cov_matSEXP, SEXP indSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type omega(omegaSEXP);
-    Rcpp::traits::input_parameter< List >::type list_cov_mat(list_cov_matSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
-    rcpp_result_gen = Rcpp::wrap(varFirstTerm(beta, omega, list_cov_mat, ind));
-    return rcpp_result_gen;
-END_RCPP
-}
-// varSecondTerm
-arma::mat varSecondTerm(arma::vec omega_beta, List list_cov_mat, arma::vec ind);
-RcppExport SEXP _ECCCM_varSecondTerm(SEXP omega_betaSEXP, SEXP list_cov_matSEXP, SEXP indSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type omega_beta(omega_betaSEXP);
-    Rcpp::traits::input_parameter< List >::type list_cov_mat(list_cov_matSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
-    rcpp_result_gen = Rcpp::wrap(varSecondTerm(omega_beta, list_cov_mat, ind));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -121,9 +80,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// varFirstTermNew
-arma::mat varFirstTermNew(arma::vec beta, arma::mat omega, arma::mat x, arma::vec ind);
-RcppExport SEXP _ECCCM_varFirstTermNew(SEXP betaSEXP, SEXP omegaSEXP, SEXP xSEXP, SEXP indSEXP) {
+// varFirstTerm
+arma::mat varFirstTerm(arma::vec beta, arma::mat omega, arma::mat x, arma::vec ind);
+RcppExport SEXP _ECCCM_varFirstTerm(SEXP betaSEXP, SEXP omegaSEXP, SEXP xSEXP, SEXP indSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -131,20 +90,47 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type omega(omegaSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
-    rcpp_result_gen = Rcpp::wrap(varFirstTermNew(beta, omega, x, ind));
+    rcpp_result_gen = Rcpp::wrap(varFirstTerm(beta, omega, x, ind));
     return rcpp_result_gen;
 END_RCPP
 }
-// varSecondTermNew
-arma::mat varSecondTermNew(arma::vec omega_beta, arma::mat x, arma::vec ind);
-RcppExport SEXP _ECCCM_varSecondTermNew(SEXP omega_betaSEXP, SEXP xSEXP, SEXP indSEXP) {
+// varSecondTerm
+arma::mat varSecondTerm(arma::vec omega_beta, arma::mat x, arma::vec ind);
+RcppExport SEXP _ECCCM_varSecondTerm(SEXP omega_betaSEXP, SEXP xSEXP, SEXP indSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type omega_beta(omega_betaSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
-    rcpp_result_gen = Rcpp::wrap(varSecondTermNew(omega_beta, x, ind));
+    rcpp_result_gen = Rcpp::wrap(varSecondTerm(omega_beta, x, ind));
+    return rcpp_result_gen;
+END_RCPP
+}
+// quadForm
+double quadForm(arma::vec x, arma::mat S);
+RcppExport SEXP _ECCCM_quadForm(SEXP xSEXP, SEXP SSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type S(SSEXP);
+    rcpp_result_gen = Rcpp::wrap(quadForm(x, S));
+    return rcpp_result_gen;
+END_RCPP
+}
+// addVarGauss
+arma::mat addVarGauss(arma::mat cov_mat, arma::mat omega, arma::vec beta, int n_r, int n_o);
+RcppExport SEXP _ECCCM_addVarGauss(SEXP cov_matSEXP, SEXP omegaSEXP, SEXP betaSEXP, SEXP n_rSEXP, SEXP n_oSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< int >::type n_r(n_rSEXP);
+    Rcpp::traits::input_parameter< int >::type n_o(n_oSEXP);
+    rcpp_result_gen = Rcpp::wrap(addVarGauss(cov_mat, omega, beta, n_r, n_o));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -153,14 +139,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ECCCM_outerProdRow", (DL_FUNC) &_ECCCM_outerProdRow, 1},
     {"_ECCCM_covRows", (DL_FUNC) &_ECCCM_covRows, 3},
     {"_ECCCM_findCovVar", (DL_FUNC) &_ECCCM_findCovVar, 2},
-    {"_ECCCM_findCovBayes_old", (DL_FUNC) &_ECCCM_findCovBayes_old, 4},
     {"_ECCCM_findCovBayes", (DL_FUNC) &_ECCCM_findCovBayes, 3},
-    {"_ECCCM_varFirstTerm", (DL_FUNC) &_ECCCM_varFirstTerm, 4},
-    {"_ECCCM_varSecondTerm", (DL_FUNC) &_ECCCM_varSecondTerm, 3},
     {"_ECCCM_findCovByInd", (DL_FUNC) &_ECCCM_findCovByInd, 2},
     {"_ECCCM_findCovTwoInd", (DL_FUNC) &_ECCCM_findCovTwoInd, 3},
-    {"_ECCCM_varFirstTermNew", (DL_FUNC) &_ECCCM_varFirstTermNew, 4},
-    {"_ECCCM_varSecondTermNew", (DL_FUNC) &_ECCCM_varSecondTermNew, 3},
+    {"_ECCCM_varFirstTerm", (DL_FUNC) &_ECCCM_varFirstTerm, 4},
+    {"_ECCCM_varSecondTerm", (DL_FUNC) &_ECCCM_varSecondTerm, 3},
+    {"_ECCCM_quadForm", (DL_FUNC) &_ECCCM_quadForm, 2},
+    {"_ECCCM_addVarGauss", (DL_FUNC) &_ECCCM_addVarGauss, 5},
     {NULL, NULL, 0}
 };
 
