@@ -19,9 +19,9 @@ findOmegaBeta <- function(beta.mc, omega, sigma, n.o) {
 
 estimateVarAdd <- function(beta.mc, beta.omega, x.r, ind.beta.mc, ind.beta.omega, omega, n.o) {
   ### Term 1
-  term.1.var.r <- varFirstTermNew(beta.mc, omega, x = x.r, ind = ind.beta.mc)  / nrow(x.r)
+  term.1.var.r <- varFirstTerm(beta.mc, omega, x = x.r, ind = ind.beta.mc)  / nrow(x.r)
   ### Term 2
-  term.2.var.r <- varSecondTermNew(beta.omega, x = x.r, ind = ind.beta.omega) / n.o
+  term.2.var.r <- varSecondTerm(beta.omega, x = x.r, ind = ind.beta.omega) / n.o
   ### Naive var
   return(list('var.term.1' = term.1.var.r,
               'var.term.2' = term.2.var.r,

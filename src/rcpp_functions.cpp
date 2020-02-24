@@ -68,47 +68,6 @@ arma::mat findCovBayes(List list_cov_mat, arma::mat cov_mat, arma::mat delta_gam
   }
   return sol;
 }
-// [[Rcpp::export]]
-arma::mat varFirstTerm(arma::vec beta, arma::mat omega, List list_cov_mat, arma::vec ind) {
-  int i = 0;
-  int j = 0;
-  int p = beta.size(); // Thresholded beta
-  int k = ind.size();
-  int i_ind = 0;
-  int j_ind = 0;
-  ind = ind - 1; // indices are from R
-  arma::mat sol = arma::mat(p, p, fill::zeros);
-  for (i = 0; i < k; i++) {
-    i_ind = ind.at(i);
-    for (j = 0; j < k; j++) {
-      j_ind = ind.at(j);
-      sol  +=  beta.at(i_ind) * beta.at(j_ind) * omega * covRows(list_cov_mat, i_ind, j_ind) * omega;
-    }
-  }
-  return sol;
-}
-
-// Input: omega_beta: linear transformed Sigma^{-1} * beta
-//        list_cov_mat: list of rows outerproduct (only)
-// [[Rcpp::export]]
-arma::mat varSecondTerm(arma::vec omega_beta, List list_cov_mat, arma::vec ind) {
-  int i = 0;
-  int j = 0;
-  int p = omega_beta.size(); // thresholded omega_beta
-  int k = ind.size();
-  int i_ind = 0;
-  int j_ind = 0;
-  ind = ind - 1; // indices are from R
-  arma::mat sol = arma::mat(p, p, fill::zeros);
-  for (i = 0; i < k; i++) {
-    i_ind = ind.at(i);
-    for (j = 0; j < k; j++) {
-      j_ind = ind.at(j);
-      sol +=  omega_beta.at(i_ind) * omega_beta.at(j_ind) * covRows(list_cov_mat, i_ind, j_ind);
-    }
-  }
-  return sol;
-}
 
 
 // [[Rcpp::export]]
@@ -134,7 +93,7 @@ arma::mat findCovTwoInd(arma::mat x, int ind_a, int ind_b) {
 }
 
 // [[Rcpp::export]]
-arma::mat varFirstTermNew(arma::vec beta, arma::mat omega,  arma::mat x, arma::vec ind) {
+arma::mat varFirstTerm(arma::vec beta, arma::mat omega,  arma::mat x, arma::vec ind) {
   int i = 0;
   int j = 0;
   int p = beta.size(); // thresholded omega_beta
@@ -156,7 +115,7 @@ arma::mat varFirstTermNew(arma::vec beta, arma::mat omega,  arma::mat x, arma::v
 // Input: omega_beta: linear transformed Sigma^{-1} * beta
 //        list_cov_mat: list of rows outerproduct (only)
 // [[Rcpp::export]]
-arma::mat varSecondTermNew(arma::vec omega_beta, arma::mat x, arma::vec ind) {
+arma::mat varSecondTerm(arma::vec omega_beta, arma::mat x, arma::vec ind) {
   int i = 0;
   int j = 0;
   int p = omega_beta.size(); // thresholded omega_beta
@@ -175,6 +134,20 @@ arma::mat varSecondTermNew(arma::vec omega_beta, arma::mat x, arma::vec ind) {
   return sol;
 }
 
+// [[Rcpp::export]]
+double quadForm(arma::vec x, arma::mat S) {
+  double sol = as_scalar(x.t() * S * x);
+  return sol;
+}
+
+
+// [[Rcpp::export]]
+arma::mat addVarGauss(arma::mat cov_mat, arma::mat omega, arma::vec beta, int n_r, int n_o) {
+  arma::mat beta_outer = beta * beta.t();
+  arma::mat sol = (quadForm(beta, cov_mat) * omega + beta_outer) / n_r + (quadForm(beta, omega) * cov_mat + beta_outer) / n_o;
+  return(sol);
+}
+
 
 
 
@@ -191,6 +164,22 @@ diag(delta.gamma)[gamma.vec] <- 1
 a.var <- findCovVar(cov.mat.list, cov.x.ref)
 covRows(cov.mat.list, 1, 1)
 
+x <- c(1,2)
+S <- diag(2)
 
-*/
+quadForm(x, S)
+addVarGauss(S, S, x, 5, 5)
+
+est.beta.hat <- x
+cov.list.r <- list('cov' = S, 'omega' = S)
+n.r <- 5
+n.o <- 5
+
+term.2.var.theoertical <- (drop(t(est.beta.hat) %*% cov.list.r$cov %*% est.beta.hat) * cov.list.r$omega + est.beta.hat %*% t(est.beta.hat)) / n.r
+term.3.var.theoertical <- (drop(t(est.beta.hat) %*% cov.list.r$omega %*% est.beta.hat) * cov.list.r$cov + est.beta.hat %*% t(est.beta.hat)) / n.o
+
+term.2.var.theoertical + term.3.var.theoertical
+
+
+  */
 
