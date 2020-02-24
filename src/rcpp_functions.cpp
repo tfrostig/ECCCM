@@ -58,29 +58,6 @@ arma::mat findCovVar(List list_cov_mat, arma::mat cov_mat) {
 }
 
 
-
-// [[Rcpp::export]]
-arma::mat findCovBayes_old(List list_cov_mat, arma::mat cov_mat, arma::mat delta_gamma, bool only_diag) {
-  arma::mat omega = inv(cov_mat);
-  int i = 0;
-  int p = cov_mat.n_cols;
-  arma::mat sol = arma::mat(p ,p, fill::zeros);
-  if (only_diag) {
-    for (i = 0; i < p; i++) {
-      sol += delta_gamma.at(i, i) * omega * covRows(list_cov_mat, i, i) * omega;
-    }
-  } else {
-    int j = 0;
-    arma::mat sigma_omega = omega * delta_gamma * omega;
-    for (i = 0; i < p; i++) {
-      for (j = 0; j < p; j++) {
-        sol += sigma_omega.at(i, j) * covRows(list_cov_mat, i, j);
-      }
-    }
-  }
-  return sol;
-}
-
 // [[Rcpp::export]]
 arma::mat findCovBayes(List list_cov_mat, arma::mat cov_mat, arma::mat delta_gamma) {
   int i = 0;
