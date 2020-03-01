@@ -8,6 +8,7 @@ analyzeRefGauss(
   marg.beta.hat,
   ld.mat,
   n.o,
+  n.r,
   sigma.method = "conservative",
   method.filter = "none",
   method.test = "BH",
@@ -21,6 +22,8 @@ analyzeRefGauss(
 
 \item{n.o}{The number of observations in original study}
 
+\item{n.r}{The number of observation in reference panel}
+
 \item{sigma.method}{String indicating how to estimate sigma, currently supports three methods, 'conservative', sigma is estimated as 1.
 'estimate' the usual estimator of the variance (assuming y is scaled sigma = 1 - var(x.r beta_mc)), and 'semi.conservative' which is similar to
 the 'estimate' method, but the beta_mc is thresholded.}
@@ -30,8 +33,6 @@ the 'estimate' method, but the beta_mc is thresholded.}
 \item{method.test}{multiple adjustment method  to use when testing the adjusted coefficients (see p.adjust)}
 
 \item{qu}{P-value threshold.}
-
-\item{n.r}{The number of observation in reference panel}
 }
 \value{
 list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value.

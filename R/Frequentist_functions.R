@@ -215,6 +215,7 @@ marginalToJoint <- function(marg.beta.hat, x.r, cov.r, inv.r, n.o,
 analyzeRefGauss<- function(marg.beta.hat,
                            ld.mat,
                            n.o,
+                           n.r,
                            sigma.method         = 'conservative',
                            method.filter        = 'none',
                            method.test          = 'BH',
@@ -266,11 +267,11 @@ analyzeRefGauss<- function(marg.beta.hat,
                            n_o         = n.o,
                            n_r         = n.r)
     test.correct.df <- testCoef(est.beta = threshold.beta.est,
-                                var.beta = marg.to.joint$naive.var.beta.hat + est.var,
+                                var.beta = marg.to.joint$naive.var.beta.hat + diag(est.var),
                                 method   = method.test)
 
     return(list(test.correct                = test.correct.df,
-                add.var                     = est.var$total,
+                add.var                     = est.var,
                 test.naive                  = test.df,
                 sigma                       = sigma.est))
   }

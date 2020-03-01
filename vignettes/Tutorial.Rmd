@@ -79,10 +79,12 @@ The natural estimator of $\beta$ is
 $$\hat{\beta}_{mc} = \frac{n_r}{n_o} (G_r'G_r)^{-1}G_o' y.$$
 
 
-The naive variance estimator of this estimate is $\frac{\hat{\sigma}^2}{n_o}\hat{\Sigma}_r$. To transform the marginal estimated coefficients to joint estimated coefficients we will use the function `ECCCM::covMatMaker` and `ECCCM::marginalToJoint`. 
+The naive variance estimator of this estimate is $\frac{\hat{\sigma}^2}{n_o}\hat{\Sigma}_r$. To transform the marginal estimated coefficients to joint estimated coefficients we will use the function `ECCCM::covMatMaker`, the function estimate the covariance matrix using a desired thresholding method and cross validation, for example
+After we have obtained our covariance matrix we can transform the marginal associations into multivariate assoications using `ECCCM::marginalToJoint`. 
 
 ```{r}
-cov.list.r    <- covMatMaker(G.ref, is.scaled = TRUE)
+cov.list.r    <- covMatMaker(G.ref, method.threshold = 'soft', threshold.seq = seq(0.01, 0.1, 0.03), 
+                             cv.threshold = 5)
 ### Transform Beta to multivarite
 marg.to.joint <- marginalToJoint(marg.beta.hat = beta.report, 
                                  x.r = G.ref, 
@@ -175,9 +177,8 @@ Only SNPs `1 and 15` pass the threshold now.
 
 #### Summary 
 
-The document demonstrated the usage of various functions of the `ECCCM` package. To save time one can utilize the `ECCCM::analyzeRef` function,  that conducts the whole process.
+The document demonstrated the usage of various functions of the `ECCCM` package. To save time one can use the `ECCCM::analyzeRef` function that conducts the whole process.
 It supports three ways to estimate $\sigma$: 'conservative' ($\hat{\sigma}^2 = 1$), 'estimate' ($\hat{\sigma}^2 = 1 - var(G_r' * \hat{\beta}_{mc})$) and 'semi.conservative' ($\hat{\sigma}^2 = 1 - var(G_r' * \tilde{\beta}_{mc})$, where $\tilde{\beta}_{mc}$ is the thresholded estimated coefficients). 
-
 
 
 The function returns details regarding the testing such as the estimated $\sigma$, the number of coefficients and weight captured by them for $\Sigma^{-1} \beta$, as well as the additional variance added and the corrected p-values. 
@@ -211,4 +212,29 @@ head(analyzeRef(marg.beta.hat = beta.report,
 ```
 
 
+## Using the normal approximation 
 
+
+A different approach is to rely on the normal approximation. While the normal approximation is not always suitable and depends on a sufficiently large sample size, it carries benefits of being fast, and not requiring individual level data of the reference panel, solely the LD matrix. 
+
+Using the normal approximation the distribution of $\hat{\beta}_{mc}$, 
+
+$$ 
+        \hat{\beta}_{mc} \mathrel{\dot\sim} N\left( \beta,   n_{r}^{-1}(  \beta' \Sigma \beta \Sigma^{-1}) + n_{o}^{-1}  ( \beta' \Sigma^{-1} \beta \Sigma ) + \frac{n_r + n_o}{n_r n_o} \beta \beta' + \frac{\sigma^2}{n_o} \Sigma^{-1} \right).
+$$
+
+
+The function to use is `analyzeRefGauss`, it has less parameters since it does not conducts and regularization, in the example used above. 
+
+
+```{r}
+head(analyzeRefGauss(marg.beta.hat = beta.report, 
+                ld.mat        = cov(G.ref), 
+                n.o           = n.org,
+                n.r           = nrow(G.ref),
+                sigma.method  = 'conservative', 
+                qu            = 0.05)$test.correct)
+```
+
+
+leading to similar results.
