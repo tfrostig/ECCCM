@@ -140,12 +140,16 @@ double quadForm(arma::vec x, arma::mat S) {
   return sol;
 }
 
-
 // [[Rcpp::export]]
 arma::mat addVarGauss(arma::mat cov_mat, arma::mat omega, arma::vec beta, int n_r, int n_o) {
+  int p = cov_mat.n_cols;
+  double c_const = pow((n_r - p) * (n_r - p - 1) * (n_r - p - 3), -1);
+  double d_const = pow((n_r - p) * pow(n_r - p - 1, 2) * (n_r - p - 3), -1);
   arma::mat beta_outer = beta * beta.t();
-  arma::mat sol = (quadForm(beta, cov_mat) * omega + beta_outer) / n_r + (quadForm(beta, omega) * cov_mat + beta_outer) / n_o;
-  return(sol);
+  arma::mat sol_a = (quadForm(beta, cov_mat) * omega + beta_outer) / n_o;
+  arma::mat sol_b = pow(n_r, 2)* (c_const * quadForm(beta, cov_mat) * omega + (c_const + 2 * d_const) * beta_outer);
+  arma::mat sol_c = ((n_r - 1) * pow(n_r, 2) * c_const / n_o) * omega;
+  return(sol_a + sol_b + sol_c);
 }
 
 

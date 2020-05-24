@@ -204,7 +204,7 @@ marginalToJoint <- function(marg.beta.hat, x.r, cov.r, inv.r, n.o,
 #' the 'estimate' method, but the beta_mc is thresholded.
 #' @param method.filter multiple adjustment method to use in thresholding of the coefficient (see p.adjust)
 #' @param method.test multiple adjustment method  to use when testing the adjusted coefficients (see p.adjust)
-#' @param qu P-value threshold.
+#' @param qu Coefficients with p-value lower than 'qu' are thresholded to 0.
 #' @return list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value.
 #' `test.naive` data.frame with the adjusted coefficeint but not adjusted variance, with two sided testing p-value.
 #' `add.var` the additional variance, `sigma` the estimated sigma.
@@ -219,8 +219,8 @@ analyzeRefGauss<- function(marg.beta.hat,
                            sigma.method         = 'conservative',
                            method.filter        = 'none',
                            method.test          = 'BH',
-                           qu                   = 0.05) {
-  p   <- ncol(ld.mat)
+                           qu                   = 1) {
+  p             <- ncol(ld.mat)
   cov.list.r    <- list('cov' = ld.mat, 'omega' = solve(ld.mat))
   marg.to.joint <- marginalToJoint(marg.beta.hat = marg.beta.hat,
                                    x.r = x.r,
@@ -261,7 +261,8 @@ analyzeRefGauss<- function(marg.beta.hat,
                 sigma.est       = sigma.est))
   }
   if (length(ind.beta.pass) > 0) {
-    est.var <- addVarGauss(beta        = threshold.beta.est,
+    ### Applying the shrinkage of beta
+    est.var <- addVarGauss(beta        = ((n.r - p - 1) / n.r) * threshold.beta.est,
                            cov_mat     = cov.list.r$cov,
                            omega       = cov.list.r$omega,
                            n_o         = n.o,

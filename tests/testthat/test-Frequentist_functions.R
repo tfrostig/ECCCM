@@ -115,6 +115,7 @@ test_that("analyzeRefGauss function runs with various parameters", {
   testthat::expect_true(class(ECCCM::analyzeRefGauss(marg.beta.hat = rep(0.1, 10),
                                                      ld.mat = cov.mat,
                                                      n.o = 100,
+                                                     n.r = 100,
                                                      sigma.method = 'semi.conservative',
                                                      method.filter = 'BH',
                                                      method.test = 'BH',
@@ -137,9 +138,9 @@ test_that("analyzeRefGauss maintains the speficied FDR", {
                                          n.o = 900,
                                          n.r = 300,
                                          sigma.method = 'conservative',
-                                         method.filter = 'BH',
+                                         method.filter = 'none',
                                          method.test = 'BH',
-                                         qu = 0.05)$test.correct[ ,3] < 0.05
+                                         qu = 1)$test.correct[ ,3] < 0.05
     emp.fdr[i] <- sum(rej.vec[1:19]) / sum(rej.vec)
   }
   testthat::expect_true(mean(emp.fdr) < 0.05)

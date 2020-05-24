@@ -12,7 +12,7 @@ analyzeRefGauss(
   sigma.method = "conservative",
   method.filter = "none",
   method.test = "BH",
-  qu = 0.05
+  qu = 1
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ the 'estimate' method, but the beta_mc is thresholded.}
 
 \item{method.test}{multiple adjustment method  to use when testing the adjusted coefficients (see p.adjust)}
 
-\item{qu}{P-value threshold.}
+\item{qu}{Coefficients with p-value lower than 'qu' are thresholded to 0.}
 }
 \value{
 list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value.

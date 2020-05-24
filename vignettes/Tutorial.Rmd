@@ -237,4 +237,4 @@ head(analyzeRefGauss(marg.beta.hat = beta.report,
 ```
 
 
-leading to similar results.
+The function yields similar results to `analyzeRef`.
