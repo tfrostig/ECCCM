@@ -96,7 +96,7 @@ arma::mat findCovTwoInd(arma::mat x, int ind_a, int ind_b) {
 arma::mat varFirstTerm(arma::vec beta, arma::mat omega,  arma::mat x, arma::vec ind) {
   int i = 0;
   int j = 0;
-  int p = beta.size(); // thresholded omega_beta
+  int p = beta.size(); // thresholded beta
   int k = ind.size();
   int i_ind = 0;
   int j_ind = 0;

@@ -17,11 +17,13 @@ findOmegaBeta <- function(beta.mc, omega, sigma, n.o) {
 #' using the reference panel
 #' @export
 
-estimateVarAdd <- function(beta.mc, beta.omega, x.r, ind.beta.mc, ind.beta.omega, omega, n.o) {
+estimateVarAdd <- function(beta.mc, x.r, ind.beta.mc, omega, n.o) {
+  ### Finding the variance of (beta' \prod \Sigma^{-1}) A (beta' prod \Sigma^{-1})
+  temp.var     <- varFirstTerm(beta.mc, omega, x = x.r, ind = ind.beta.mc)
   ### Term 1
-  term.1.var.r <- varFirstTerm(beta.mc, omega, x = x.r, ind = ind.beta.mc)  / nrow(x.r)
+  term.1.var.r <- temp.var / nrow(x.r)
   ### Term 2
-  term.2.var.r <- varSecondTerm(beta.omega, x = x.r, ind = ind.beta.omega) / n.o
+  term.2.var.r <- temp.var / n.o
   ### Naive var
   return(list('var.term.1' = term.1.var.r,
               'var.term.2' = term.2.var.r,

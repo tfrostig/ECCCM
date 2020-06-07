@@ -156,10 +156,8 @@ To estimate the variance we use the function `ECCCM::estimateVarAdd`. The functi
 
 ```{r}
 est.var <- estimateVarAdd(beta.mc = threshold.beta.est, 
-                          beta.omega = beta.omega,
                           x.r = G.ref, 
                           ind.beta.mc = which(test.df[ ,3] < 0.05), 
-                          ind.beta.omega = sort.weight$ix[1:8],
                           omega = cov.list.r$omega,
                           n.o = n.org)
 ```
@@ -190,8 +188,7 @@ head(analyzeRef(marg.beta.hat = beta.report,
                 x.r           = G.ref, 
                 n.o           = n.org,
                 sigma.method  = 'conservative', 
-                qu            = 0.05, 
-                explained.omega.beta = 0.95)$test.correct)
+                qu            = 0.05)$test.correct)
 
 
 
@@ -199,16 +196,14 @@ head(analyzeRef(marg.beta.hat = beta.report,
                 x.r           = G.ref, 
                 n.o           = n.org,
                 sigma.method  = 'estimate', 
-                qu            = 0.05, 
-                explained.omega.beta = 0.95)$test.correct)
+                qu            = 0.05)$test.correct)
 
 
 head(analyzeRef(marg.beta.hat = beta.report, 
                 x.r           = G.ref, 
                 n.o           = n.org,
                 sigma.method  = 'semi.conservative', 
-                qu            = 0.05, 
-                explained.omega.beta = 0.95)$test.correct)
+                qu            = 0.05)$test.correct)
 ```
 
 

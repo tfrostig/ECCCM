@@ -11,8 +11,6 @@
 #' @param ncv.threshold the number of repetitions for 2-fold random cross validations for each threshold value.
 #' @param threshold.cov.seq user-defined threshold value. If it is a vector of regularization values, it automatically selects one that minimizes cross validation risk.
 #' @param qu P-value threshold.
-#' @param explained.omega.beta Minimal weight for thresholding omega.beta
-#' @param max.omega.beta Maximum number of cofficients taken from omega.beta
 # @param is.scaled Boolean flag, is original study X and y are scaled. For now only supports TRUE.
 #' @return list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value.
 #' `test.naive` data.frame with the adjusted coefficeint but not adjusted variance, with two sided testing p-value.
@@ -30,9 +28,7 @@ analyzeRef <- function(marg.beta.hat,
                        method.threshold     = 'soft',
                        ncv.threshold        = 5,
                        threshold.cov.seq    = seq(10^(-5), 0.2, 0.05),
-                       qu                   = 0.05,
-                       explained.omega.beta = 0.9,
-                       max.omega.beta       = 20) {
+                       qu                   = 0.05) {
   p   <- ncol(x.r)
   n.r <- nrow(x.r)
   cov.list.r    <- covMatMaker(x.r, method.threshold, ncv.threshold, threshold.cov.seq)
@@ -79,20 +75,9 @@ analyzeRef <- function(marg.beta.hat,
                 sigma.est           = sigma.est))
   }
   if (length(ind.beta.pass) > 0) {
-    beta.omega                        <- cov.list.r$omega %*% threshold.beta.est
-    weight.beta.omega                 <- findWeights(beta.omega,
-                                                     var.explained = explained.omega.beta,
-                                                     max.weights   = max.omega.beta)
-    ind.betaomega.pass                <- weight.beta.omega$ind
-    # weight.beta                       <- findWeights(test.df[ ,3],
-    #                                                  var.explained = explained.beta,
-    #                                                  max.weights   = max.beta)
-    # ind.beta.pass                    <- weight.beta$ind ## removed due to being to conservative.
     est.var <- estimateVarAdd(beta.mc        = threshold.beta.est,
-                              beta.omega     = beta.omega,
                               x.r            = x.r,
                               ind.beta.mc    = ind.beta.pass,
-                              ind.beta.omega = ind.betaomega.pass,
                               omega          = cov.list.r$omega,
                               n.o            = n.o)
 
@@ -103,8 +88,6 @@ analyzeRef <- function(marg.beta.hat,
     return(list(test.correct                = test.correct.df,
                 add.var                     = est.var$total,
                 test.naive                  = test.df,
-                var.omega.beta              = c('number.of.coef' = weight.beta.omega$cut.off,
-                                                'prop.weight'    = sum(beta.omega[ind.betaomega.pass]^2) / sum(beta.omega^2)),
                 var.beta                    = c('number.of.coef' = length(ind.beta.pass),
                                                 'prop.weight'    = sum(test.df[ind.beta.pass,3]^2) / sum(test.df[ ,3]^2)),
                 sigma                       = sigma.est,
