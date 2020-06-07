@@ -68,42 +68,29 @@ BEGIN_RCPP
 END_RCPP
 }
 // findCovTwoInd
-arma::mat findCovTwoInd(arma::mat x, int ind_a, int ind_b);
-RcppExport SEXP _ECCCM_findCovTwoInd(SEXP xSEXP, SEXP ind_aSEXP, SEXP ind_bSEXP) {
+arma::mat findCovTwoInd(List cov_scaled_list, int ind_a, int ind_b);
+RcppExport SEXP _ECCCM_findCovTwoInd(SEXP cov_scaled_listSEXP, SEXP ind_aSEXP, SEXP ind_bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< List >::type cov_scaled_list(cov_scaled_listSEXP);
     Rcpp::traits::input_parameter< int >::type ind_a(ind_aSEXP);
     Rcpp::traits::input_parameter< int >::type ind_b(ind_bSEXP);
-    rcpp_result_gen = Rcpp::wrap(findCovTwoInd(x, ind_a, ind_b));
+    rcpp_result_gen = Rcpp::wrap(findCovTwoInd(cov_scaled_list, ind_a, ind_b));
     return rcpp_result_gen;
 END_RCPP
 }
 // varFirstTerm
-arma::mat varFirstTerm(arma::vec beta, arma::mat omega, arma::mat x, arma::vec ind);
-RcppExport SEXP _ECCCM_varFirstTerm(SEXP betaSEXP, SEXP omegaSEXP, SEXP xSEXP, SEXP indSEXP) {
+arma::mat varFirstTerm(arma::vec beta, arma::mat omega, List cov_list_scaled, arma::vec ind);
+RcppExport SEXP _ECCCM_varFirstTerm(SEXP betaSEXP, SEXP omegaSEXP, SEXP cov_list_scaledSEXP, SEXP indSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type omega(omegaSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< List >::type cov_list_scaled(cov_list_scaledSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
-    rcpp_result_gen = Rcpp::wrap(varFirstTerm(beta, omega, x, ind));
-    return rcpp_result_gen;
-END_RCPP
-}
-// varSecondTerm
-arma::mat varSecondTerm(arma::vec omega_beta, arma::mat x, arma::vec ind);
-RcppExport SEXP _ECCCM_varSecondTerm(SEXP omega_betaSEXP, SEXP xSEXP, SEXP indSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type omega_beta(omega_betaSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
-    rcpp_result_gen = Rcpp::wrap(varSecondTerm(omega_beta, x, ind));
+    rcpp_result_gen = Rcpp::wrap(varFirstTerm(beta, omega, cov_list_scaled, ind));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -143,7 +130,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ECCCM_findCovByInd", (DL_FUNC) &_ECCCM_findCovByInd, 2},
     {"_ECCCM_findCovTwoInd", (DL_FUNC) &_ECCCM_findCovTwoInd, 3},
     {"_ECCCM_varFirstTerm", (DL_FUNC) &_ECCCM_varFirstTerm, 4},
-    {"_ECCCM_varSecondTerm", (DL_FUNC) &_ECCCM_varSecondTerm, 3},
     {"_ECCCM_quadForm", (DL_FUNC) &_ECCCM_quadForm, 2},
     {"_ECCCM_addVarGauss", (DL_FUNC) &_ECCCM_addVarGauss, 5},
     {NULL, NULL, 0}

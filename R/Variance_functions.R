@@ -8,7 +8,7 @@ findOmegaBeta <- function(beta.mc, omega, sigma, n.o) {
 #' estimateVarAdd - estimation of additional variance
 #' @param beta.mc The estimate of coefficient of joint regression (transformed marginal beta)
 #' @param beta.omega Transformed `beta.mc` basically, just `beta.omega %*% omega`, where omega is the estimated inverse covariance matrix.
-#' @param x.r The reference panel.
+#' @param cov.list.boot Bootstrap of scaled covariance matrices.
 #' @param ind.beta.mc Indices of which `beta.mc` to consider, in the bayesian scenario determined by vector gamma.
 #' @param ind.beta.omega Indices of which `beta.omega` to consider
 #' @param omega - Inverse of estimated covaraince matrix
@@ -17,11 +17,11 @@ findOmegaBeta <- function(beta.mc, omega, sigma, n.o) {
 #' using the reference panel
 #' @export
 
-estimateVarAdd <- function(beta.mc, x.r, ind.beta.mc, omega, n.o) {
+estimateVarAdd <- function(beta.mc, cov.list.boot, omega, n.o, n.r, ind.vec) {
   ### Finding the variance of (beta' \prod \Sigma^{-1}) A (beta' prod \Sigma^{-1})
-  temp.var     <- varFirstTerm(beta.mc, omega, x = x.r, ind = ind.beta.mc)
+  temp.var     <- varFirstTerm(beta.mc, omega, cov_list_scaled = cov.list.boot, ind = ind.vec)
   ### Term 1
-  term.1.var.r <- temp.var / nrow(x.r)
+  term.1.var.r <- temp.var / n.r
   ### Term 2
   term.2.var.r <- temp.var / n.o
   ### Naive var
@@ -30,3 +30,28 @@ estimateVarAdd <- function(beta.mc, x.r, ind.beta.mc, omega, n.o) {
               'total'      = (term.1.var.r + term.2.var.r)))
 
 }
+
+
+#### Bootstrap functions
+#' Create bootstrap for matrix
+#' @param x matrix of n rows
+#' @return returns a matrix with n rows sampled from x
+createBootStrap <- function(x) {
+  return(x[sample(nrow(x), nrow(x), replace = TRUE), ])
+}
+
+#### Create bootstrap covariance matrices
+#' Create list of boostraped scaled covariance matrices
+#' @param x matrix of n rows
+#' @param B integer, specifying the number of bootstrap samples to create
+#' @return returns a list of bootstrapped scaled covariance matrices
+createListCov <- function(x, B = nrow(x)) {
+  res.list <-  vector("list", length = B)
+  for (i in 1:B) {
+    res.list[[i]] <- cor(createBootStrap(x))
+  }
+  return(res.list)
+}
+
+
+

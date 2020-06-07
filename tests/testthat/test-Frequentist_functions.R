@@ -28,7 +28,7 @@ test_that("Function runs with various parameters", {
 })
 
 test_that("Function runs with various parameters", {
-  x.r <- matrix(rnorm(1000), ncol = 10, nrow = 100)
+  x.r <-  scale(matrix(rnorm(1000), ncol = 10, nrow = 100))
   testthat::expect_true(class(ECCCM::analyzeRef(marg.beta.hat = rep(1, 10),
                                                 x.r = x.r,
                                                 n.o = 100,
@@ -39,7 +39,7 @@ test_that("Function runs with various parameters", {
 })
 
 test_that("Function runs with various parameters", {
-  x.r <- matrix(rnorm(1000), ncol = 10, nrow = 100)
+  x.r <-  scale(matrix(rnorm(1000), ncol = 10, nrow = 100))
   testthat::expect_true(class(ECCCM::analyzeRef(marg.beta.hat = rep(0.1, 10),
                                                 x.r = x.r,
                                                 n.o = 100,
@@ -49,18 +49,30 @@ test_that("Function runs with various parameters", {
                                                 qu = 0.05)) == 'list')
 })
 
+test_that("Function runs when only part of dimensiosn are chosen", {
+  x.r <-  scale(matrix(rnorm(1000), ncol = 10, nrow = 100))
+  testthat::expect_true(class(ECCCM::analyzeRef(marg.beta.hat = c(3,3, rep(0, 8)),
+                                                x.r = x.r,
+                                                n.o = 100,
+                                                sigma.method = 'conservative',
+                                                method.filter = 'BH',
+                                                method.test = 'BH',
+                                                qu = 0.05)) == 'list')
+})
+
+
 
 
 
 test_that("Function runs with various parameters", {
-  x.r <- matrix(rnorm(1000), ncol = 10, nrow = 100)
+  x.r <- scale(matrix(rnorm(1000), ncol = 10, nrow = 100))
   testthat::expect_true(ECCCM::analyzeRef(marg.beta.hat = rep(1, 10),
-                                                x.r = x.r,
-                                                n.o = 100,
-                                                sigma.method = 'conservative',
-                                                method.filter = 'none',
-                                                method.test = 'BH',
-                                                qu = 0.05)$var.beta[1] > 1)
+                                          x.r = x.r,
+                                          n.o = 100,
+                                          sigma.method = 'conservative',
+                                          method.filter = 'none',
+                                          method.test = 'BH',
+                                          qu = 0.05)$var.beta[1] > 1)
 })
 
 
@@ -105,7 +117,7 @@ test_that("Functions works with all various options of regularization", {
 })
 
 test_that("analyzeRefGauss function runs with various parameters", {
-  x.r <- matrix(rnorm(1000), ncol = 10, nrow = 100)
+  x.r <- scale(matrix(rnorm(1000), ncol = 10, nrow = 100))
   cov.mat <- cov(x.r)
   testthat::expect_true(class(ECCCM::analyzeRefGauss(marg.beta.hat = rep(0.1, 10),
                                                      ld.mat = cov.mat,

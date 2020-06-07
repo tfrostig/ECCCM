@@ -155,20 +155,23 @@ To estimate the variance we use the function `ECCCM::estimateVarAdd`. The functi
 
 
 ```{r}
-est.var <- estimateVarAdd(beta.mc = threshold.beta.est, 
-                          x.r = G.ref, 
-                          ind.beta.mc = which(test.df[ ,3] < 0.05), 
-                          omega = cov.list.r$omega,
-                          n.o = n.org)
+
+# cov.list.boot <- ECCCM:::createListCov(G.ref)
+# est.var <- estimateVarAdd(beta.mc = threshold.beta.est, 
+#                           x.r = cov.list.boot, 
+#                           ind.beta.mc = which(test.df[ ,3] < 0.05), 
+#                           omega = cov.list.r$omega,
+#                           n.o = n.org,
+#                           n.r = nrow(G.ref))
 ```
 
 And we can test the coefficients with the additional variance 
 
 ```{r}
-test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat, 
-                    var.beta = marg.to.joint$naive.var.beta.hat + diag(est.var$total),
-                    method = 'BH')
-which(test.df[ ,3] < 0.05)
+# test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat, 
+#                     var.beta = marg.to.joint$naive.var.beta.hat + diag(est.var$total),
+#                     method = 'BH')
+# which(test.df[ ,3] < 0.05)
 ```
 
 Only SNPs `1 and 15` pass the threshold now. 
@@ -184,26 +187,26 @@ The function currently only support scaled $X$ and $y$.
 
 
 ```{r}
-head(analyzeRef(marg.beta.hat = beta.report, 
-                x.r           = G.ref, 
-                n.o           = n.org,
-                sigma.method  = 'conservative', 
-                qu            = 0.05)$test.correct)
-
-
-
-head(analyzeRef(marg.beta.hat = beta.report, 
-                x.r           = G.ref, 
-                n.o           = n.org,
-                sigma.method  = 'estimate', 
-                qu            = 0.05)$test.correct)
-
-
-head(analyzeRef(marg.beta.hat = beta.report, 
-                x.r           = G.ref, 
-                n.o           = n.org,
-                sigma.method  = 'semi.conservative', 
-                qu            = 0.05)$test.correct)
+# head(analyzeRef(marg.beta.hat = beta.report, 
+#                 x.r           = G.ref, 
+#                 n.o           = n.org,
+#                 sigma.method  = 'conservative', 
+#                 qu            = 0.05)$test.correct)
+# 
+# 
+# 
+# head(analyzeRef(marg.beta.hat = beta.report, 
+#                 x.r           = G.ref, 
+#                 n.o           = n.org,
+#                 sigma.method  = 'estimate', 
+#                 qu            = 0.05)$test.correct)
+# 
+# 
+# head(analyzeRef(marg.beta.hat = beta.report, 
+#                 x.r           = G.ref, 
+#                 n.o           = n.org,
+#                 sigma.method  = 'semi.conservative', 
+#                 qu            = 0.05)$test.correct)
 ```
 
 

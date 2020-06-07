@@ -21,16 +21,12 @@ findCovByInd <- function(x, ind) {
     .Call(`_ECCCM_findCovByInd`, x, ind)
 }
 
-findCovTwoInd <- function(x, ind_a, ind_b) {
-    .Call(`_ECCCM_findCovTwoInd`, x, ind_a, ind_b)
+findCovTwoInd <- function(cov_scaled_list, ind_a, ind_b) {
+    .Call(`_ECCCM_findCovTwoInd`, cov_scaled_list, ind_a, ind_b)
 }
 
-varFirstTerm <- function(beta, omega, x, ind) {
-    .Call(`_ECCCM_varFirstTerm`, beta, omega, x, ind)
-}
-
-varSecondTerm <- function(omega_beta, x, ind) {
-    .Call(`_ECCCM_varSecondTerm`, omega_beta, x, ind)
+varFirstTerm <- function(beta, omega, cov_list_scaled, ind) {
+    .Call(`_ECCCM_varFirstTerm`, beta, omega, cov_list_scaled, ind)
 }
 
 quadForm <- function(x, S) {

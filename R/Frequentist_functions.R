@@ -75,14 +75,16 @@ analyzeRef <- function(marg.beta.hat,
                 sigma.est           = sigma.est))
   }
   if (length(ind.beta.pass) > 0) {
-    est.var <- estimateVarAdd(beta.mc        = threshold.beta.est,
-                              x.r            = x.r,
-                              ind.beta.mc    = ind.beta.pass,
-                              omega          = cov.list.r$omega,
-                              n.o            = n.o)
-
+    boot.cov.list           <- ECCCM:::createListCov(x.r)
+    est.var                 <- estimateVarAdd(beta.mc        = threshold.beta.est,
+                                              cov.list.boot  = boot.cov.list,
+                                              omega          = cov.list.r$omega,
+                                              n.o            = n.o,
+                                              n.r            = n.r,
+                                              ind            = ind.beta.pass)
+    added.var       <- marg.to.joint$naive.var.beta.hat + diag(est.var$total)
     test.correct.df <- testCoef(est.beta = threshold.beta.est,
-                                var.beta = marg.to.joint$naive.var.beta.hat + diag(est.var$total),
+                                var.beta = added.var,
                                 method   = method.test)
 
     return(list(test.correct                = test.correct.df,

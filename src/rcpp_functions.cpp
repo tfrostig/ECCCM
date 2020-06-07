@@ -2,7 +2,7 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 using namespace arma;
-
+using namespace std;
 
 /// Finding the covariance of two rows of covariance matrix. /arma::mat
 //estCov(arma::mat g_r, arma::mat cov_est, int i, int j) {
@@ -20,7 +20,7 @@ List outerProdRow(arma::mat X) {
 
 
 
-// find the covariance matrix between the rows of m and k of a covariance matrix
+// find the covariance matrix between the rows of m and k of an estimated covariance matrix
 // [[Rcpp::export]]
 arma::mat covRows(List cov_mats, int m, int k) {
   int nl = cov_mats.size();
@@ -87,48 +87,40 @@ arma::mat findCovByInd(arma::mat x, int ind) {
 }
 
 // [[Rcpp::export]]
-arma::mat findCovTwoInd(arma::mat x, int ind_a, int ind_b) {
-  int n = x.n_rows;
-  return findCovByInd(x, ind_a).t() * findCovByInd(x, ind_b) / n;
-}
-
-// [[Rcpp::export]]
-arma::mat varFirstTerm(arma::vec beta, arma::mat omega,  arma::mat x, arma::vec ind) {
-  int i = 0;
-  int j = 0;
-  int p = beta.size(); // thresholded beta
-  int k = ind.size();
-  int i_ind = 0;
-  int j_ind = 0;
-  ind = ind - 1; // indices are from R
+arma::mat findCovTwoInd(List cov_scaled_list, int ind_a, int ind_b) {
+  int n = cov_scaled_list.size();
+  arma::mat temp_mat = cov_scaled_list[0];
+  int p = temp_mat.n_cols;
   arma::mat sol = arma::mat(p, p, fill::zeros);
-  for (i = 0; i < k; i++) {
-    i_ind = ind.at(i);
-    for (j = 0; j < k; j++) {
-      j_ind = ind.at(j);
-      sol  +=  beta.at(i_ind) * beta.at(j_ind) * omega * findCovTwoInd(x, i_ind, j_ind) * omega;
-    }
+  arma::vec sol_a(p, fill::zeros);
+  arma::vec sol_b(p, fill::zeros);
+  for (int i = 0; i < n; i++) {
+    arma::mat temp_mat = cov_scaled_list[i];
+    sol   += temp_mat.col(ind_a) * temp_mat.col(ind_b).t();
+    sol_a += temp_mat.col(ind_a);
+    sol_b += temp_mat.col(ind_b);
   }
-  return sol;
+  arma::mat temp_sol = (sol / n) - (sol_a / n) * (sol_b / n).t();
+  return temp_sol.clean(10^-8);
 }
 
-// Input: omega_beta: linear transformed Sigma^{-1} * beta
-//        list_cov_mat: list of rows outerproduct (only)
+
 // [[Rcpp::export]]
-arma::mat varSecondTerm(arma::vec omega_beta, arma::mat x, arma::vec ind) {
+arma::mat varFirstTerm(arma::vec beta, arma::mat omega,  List cov_list_scaled, arma::vec ind) {
   int i = 0;
   int j = 0;
-  int p = omega_beta.size(); // thresholded omega_beta
+  int p = beta.size(); // thresholded omega_beta
   int k = ind.size();
   int i_ind = 0;
   int j_ind = 0;
   ind = ind - 1; // indices are from R
   arma::mat sol = arma::mat(p, p, fill::zeros);
+  omega = omega.clean(10^-8);
   for (i = 0; i < k; i++) {
     i_ind = ind.at(i);
     for (j = 0; j < k; j++) {
       j_ind = ind.at(j);
-      sol +=  omega_beta.at(i_ind) * omega_beta.at(j_ind) * findCovTwoInd(x, i_ind, j_ind);
+      sol  +=  beta.at(i_ind) * beta.at(j_ind) * omega * findCovTwoInd(cov_list_scaled, i_ind, j_ind) * omega;
     }
   }
   return sol;
@@ -139,6 +131,7 @@ double quadForm(arma::vec x, arma::mat S) {
   double sol = as_scalar(x.t() * S * x);
   return sol;
 }
+
 
 // [[Rcpp::export]]
 arma::mat addVarGauss(arma::mat cov_mat, arma::mat omega, arma::vec beta, int n_r, int n_o) {
@@ -153,9 +146,6 @@ arma::mat addVarGauss(arma::mat cov_mat, arma::mat omega, arma::vec beta, int n_
 }
 
 
-
-
-
 /*** R
 x.ref <- MASS::mvrnorm(100, rep(0, 3), diag(3))
 x.ref <- scale(x.ref)
@@ -166,7 +156,7 @@ cov.mat.list <- outerProdRow(x.ref)
 delta.gamma       <- matrix(0, ncol = 10, nrow = 10)
 diag(delta.gamma)[gamma.vec] <- 1
 a.var <- findCovVar(cov.mat.list, cov.x.ref)
-covRows(cov.mat.list, 1, 1)
+covRows(cov.mat.list, 0, 0)
 
 x <- c(1,2)
 S <- diag(2)
