@@ -12,7 +12,8 @@ analyzeRefGauss(
   sigma.method = "conservative",
   method.filter = "none",
   method.test = "BH",
-  qu = 1
+  qu = 1,
+  B = 200
 )
 }
 \arguments{

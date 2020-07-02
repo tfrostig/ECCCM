@@ -19,7 +19,11 @@ findOmegaBeta <- function(beta.mc, omega, sigma, n.o) {
 
 estimateVarAdd <- function(beta.mc, cov.list.boot, omega, n.o, n.r, ind.vec) {
   ### Finding the variance of (beta' \prod \Sigma^{-1}) A (beta' prod \Sigma^{-1})
-  temp.var     <- varFirstTerm(beta.mc, omega, cov_list_scaled = cov.list.boot, ind = ind.vec)
+  temp.var     <- varFirstTerm(beta = beta.mc,
+                               omega = omega,
+                               cov_list_scaled = cov.list.boot,
+                               ind = ind.vec,
+                               nr = n.r)
   ### Term 1
   term.1.var.r <- temp.var / n.r
   ### Term 2

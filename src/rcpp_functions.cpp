@@ -106,7 +106,7 @@ arma::mat findCovTwoInd(List cov_scaled_list, int ind_a, int ind_b) {
 
 
 // [[Rcpp::export]]
-arma::mat varFirstTerm(arma::vec beta, arma::mat omega,  List cov_list_scaled, arma::vec ind) {
+arma::mat varFirstTerm(arma::vec beta, arma::mat omega,  List cov_list_scaled, arma::vec ind, int nr) {
   int i = 0;
   int j = 0;
   int p = beta.size(); // thresholded omega_beta
@@ -123,7 +123,7 @@ arma::mat varFirstTerm(arma::vec beta, arma::mat omega,  List cov_list_scaled, a
       sol  +=  beta.at(i_ind) * beta.at(j_ind) * omega * findCovTwoInd(cov_list_scaled, i_ind, j_ind) * omega;
     }
   }
-  return sol;
+  return nr * sol;
 }
 
 // [[Rcpp::export]]

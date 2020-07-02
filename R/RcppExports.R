@@ -25,8 +25,8 @@ findCovTwoInd <- function(cov_scaled_list, ind_a, ind_b) {
     .Call(`_ECCCM_findCovTwoInd`, cov_scaled_list, ind_a, ind_b)
 }
 
-varFirstTerm <- function(beta, omega, cov_list_scaled, ind) {
-    .Call(`_ECCCM_varFirstTerm`, beta, omega, cov_list_scaled, ind)
+varFirstTerm <- function(beta, omega, cov_list_scaled, ind, nr) {
+    .Call(`_ECCCM_varFirstTerm`, beta, omega, cov_list_scaled, ind, nr)
 }
 
 quadForm <- function(x, S) {

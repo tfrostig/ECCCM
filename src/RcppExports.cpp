@@ -81,8 +81,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // varFirstTerm
-arma::mat varFirstTerm(arma::vec beta, arma::mat omega, List cov_list_scaled, arma::vec ind);
-RcppExport SEXP _ECCCM_varFirstTerm(SEXP betaSEXP, SEXP omegaSEXP, SEXP cov_list_scaledSEXP, SEXP indSEXP) {
+arma::mat varFirstTerm(arma::vec beta, arma::mat omega, List cov_list_scaled, arma::vec ind, int nr);
+RcppExport SEXP _ECCCM_varFirstTerm(SEXP betaSEXP, SEXP omegaSEXP, SEXP cov_list_scaledSEXP, SEXP indSEXP, SEXP nrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -90,7 +90,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type omega(omegaSEXP);
     Rcpp::traits::input_parameter< List >::type cov_list_scaled(cov_list_scaledSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
-    rcpp_result_gen = Rcpp::wrap(varFirstTerm(beta, omega, cov_list_scaled, ind));
+    Rcpp::traits::input_parameter< int >::type nr(nrSEXP);
+    rcpp_result_gen = Rcpp::wrap(varFirstTerm(beta, omega, cov_list_scaled, ind, nr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -129,7 +130,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ECCCM_findCovBayes", (DL_FUNC) &_ECCCM_findCovBayes, 3},
     {"_ECCCM_findCovByInd", (DL_FUNC) &_ECCCM_findCovByInd, 2},
     {"_ECCCM_findCovTwoInd", (DL_FUNC) &_ECCCM_findCovTwoInd, 3},
-    {"_ECCCM_varFirstTerm", (DL_FUNC) &_ECCCM_varFirstTerm, 4},
+    {"_ECCCM_varFirstTerm", (DL_FUNC) &_ECCCM_varFirstTerm, 5},
     {"_ECCCM_quadForm", (DL_FUNC) &_ECCCM_quadForm, 2},
     {"_ECCCM_addVarGauss", (DL_FUNC) &_ECCCM_addVarGauss, 5},
     {NULL, NULL, 0}

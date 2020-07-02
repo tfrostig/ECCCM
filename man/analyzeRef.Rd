@@ -15,8 +15,7 @@ analyzeRef(
   ncv.threshold = 5,
   threshold.cov.seq = seq(10^(-5), 0.2, 0.05),
   qu = 0.05,
-  explained.omega.beta = 0.9,
-  max.omega.beta = 20
+  B = 500
 )
 }
 \arguments{
@@ -42,9 +41,7 @@ the 'estimate' method, but the beta_mc is thresholded.}
 
 \item{qu}{P-value threshold.}
 
-\item{explained.omega.beta}{Minimal weight for thresholding omega.beta}
-
-\item{max.omega.beta}{Maximum number of cofficients taken from omega.beta}
+\item{B}{number of bootstrap samples to conduct to estimate variance of estimated covariance.}
 }
 \value{
 list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value.

@@ -12,6 +12,7 @@
 #' @param threshold.cov.seq user-defined threshold value. If it is a vector of regularization values, it automatically selects one that minimizes cross validation risk.
 #' @param qu P-value threshold.
 # @param is.scaled Boolean flag, is original study X and y are scaled. For now only supports TRUE.
+#' @param B number of bootstrap samples to conduct to estimate variance of estimated covariance.
 #' @return list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value.
 #' `test.naive` data.frame with the adjusted coefficeint but not adjusted variance, with two sided testing p-value.
 #'  `add.var` the additional variance, `sigma` the estimated sigma.
@@ -28,7 +29,8 @@ analyzeRef <- function(marg.beta.hat,
                        method.threshold     = 'soft',
                        ncv.threshold        = 5,
                        threshold.cov.seq    = seq(10^(-5), 0.2, 0.05),
-                       qu                   = 0.05) {
+                       qu                   = 0.05,
+                       B                    = 500) {
   p   <- ncol(x.r)
   n.r <- nrow(x.r)
   cov.list.r    <- covMatMaker(x.r, method.threshold, ncv.threshold, threshold.cov.seq)
@@ -75,7 +77,7 @@ analyzeRef <- function(marg.beta.hat,
                 sigma.est           = sigma.est))
   }
   if (length(ind.beta.pass) > 0) {
-    boot.cov.list           <- ECCCM:::createListCov(x.r)
+    boot.cov.list           <- createListCov(x.r, B = B)
     est.var                 <- estimateVarAdd(beta.mc        = threshold.beta.est,
                                               cov.list.boot  = boot.cov.list,
                                               omega          = cov.list.r$omega,
@@ -204,7 +206,8 @@ analyzeRefGauss<- function(marg.beta.hat,
                            sigma.method         = 'conservative',
                            method.filter        = 'none',
                            method.test          = 'BH',
-                           qu                   = 1) {
+                           qu                   = 1,
+                           B                    = 200) {
   p             <- ncol(ld.mat)
   cov.list.r    <- list('cov' = ld.mat, 'omega' = solve(ld.mat))
   marg.to.joint <- marginalToJoint(marg.beta.hat = marg.beta.hat,
