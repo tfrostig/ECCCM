@@ -1,10 +1,3 @@
-
-findOmegaBeta <- function(beta.mc, omega, sigma, n.o) {
-  omega.beta       <-  cbind('omega_beta'     = omega %*% beta.mc,
-                             'omega_beta_var' = (sigma^2 / n.o) * diag(omega %*% omega %*% omega))
-}
-
-
 #' estimateVarAdd - estimation of additional variance
 #' @param beta.mc The estimate of coefficient of joint regression (transformed marginal beta)
 #' @param beta.omega Transformed `beta.mc` basically, just `beta.omega %*% omega`, where omega is the estimated inverse covariance matrix.
@@ -17,13 +10,13 @@ findOmegaBeta <- function(beta.mc, omega, sigma, n.o) {
 #' using the reference panel
 #' @export
 
-estimateVarAdd <- function(beta.mc, cov.list.boot, omega, n.o, n.r, ind.vec) {
+estimateVarAdd <- function(beta.mc, cov.list, cov.mat, n.o, n.r, ind.vec) {
   ### Finding the variance of (beta' \prod \Sigma^{-1}) A (beta' prod \Sigma^{-1})
-  temp.var     <- varFirstTerm(beta = beta.mc,
-                               omega = omega,
-                               cov_list_scaled = cov.list.boot,
-                               ind = ind.vec,
-                               nr = n.r)
+  temp.var     <- varBeta(beta     = beta.mc,
+                          cov_mat  = cov.mat,
+                          cov_list = cov.list,
+                          ind = ind.vec,
+                          nr  = n.r)
   ### Term 1
   term.1.var.r <- temp.var / n.r
   ### Term 2
@@ -36,26 +29,7 @@ estimateVarAdd <- function(beta.mc, cov.list.boot, omega, n.o, n.r, ind.vec) {
 }
 
 
-#### Bootstrap functions
-#' Create bootstrap for matrix
-#' @param x matrix of n rows
-#' @return returns a matrix with n rows sampled from x
-createBootStrap <- function(x) {
-  return(x[sample(nrow(x), nrow(x), replace = TRUE), ])
-}
 
-#### Create bootstrap covariance matrices
-#' Create list of boostraped scaled covariance matrices
-#' @param x matrix of n rows
-#' @param B integer, specifying the number of bootstrap samples to create
-#' @return returns a list of bootstrapped scaled covariance matrices
-createListCov <- function(x, B = nrow(x)) {
-  res.list <-  vector("list", length = B)
-  for (i in 1:B) {
-    res.list[[i]] <- cor(createBootStrap(x))
-  }
-  return(res.list)
-}
 
 
 

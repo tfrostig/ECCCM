@@ -42,19 +42,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// findCovBayes
-arma::mat findCovBayes(List list_cov_mat, arma::mat cov_mat, arma::mat delta_gamma);
-RcppExport SEXP _ECCCM_findCovBayes(SEXP list_cov_matSEXP, SEXP cov_matSEXP, SEXP delta_gammaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type list_cov_mat(list_cov_matSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type delta_gamma(delta_gammaSEXP);
-    rcpp_result_gen = Rcpp::wrap(findCovBayes(list_cov_mat, cov_mat, delta_gamma));
-    return rcpp_result_gen;
-END_RCPP
-}
 // findCovByInd
 arma::mat findCovByInd(arma::mat x, int ind);
 RcppExport SEXP _ECCCM_findCovByInd(SEXP xSEXP, SEXP indSEXP) {
@@ -68,30 +55,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // findCovTwoInd
-arma::mat findCovTwoInd(List cov_scaled_list, int ind_a, int ind_b);
-RcppExport SEXP _ECCCM_findCovTwoInd(SEXP cov_scaled_listSEXP, SEXP ind_aSEXP, SEXP ind_bSEXP) {
+arma::mat findCovTwoInd(List cov_list, int ind_a, int ind_b);
+RcppExport SEXP _ECCCM_findCovTwoInd(SEXP cov_listSEXP, SEXP ind_aSEXP, SEXP ind_bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type cov_scaled_list(cov_scaled_listSEXP);
+    Rcpp::traits::input_parameter< List >::type cov_list(cov_listSEXP);
     Rcpp::traits::input_parameter< int >::type ind_a(ind_aSEXP);
     Rcpp::traits::input_parameter< int >::type ind_b(ind_bSEXP);
-    rcpp_result_gen = Rcpp::wrap(findCovTwoInd(cov_scaled_list, ind_a, ind_b));
-    return rcpp_result_gen;
-END_RCPP
-}
-// varFirstTerm
-arma::mat varFirstTerm(arma::vec beta, arma::mat omega, List cov_list_scaled, arma::vec ind, int nr);
-RcppExport SEXP _ECCCM_varFirstTerm(SEXP betaSEXP, SEXP omegaSEXP, SEXP cov_list_scaledSEXP, SEXP indSEXP, SEXP nrSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type omega(omegaSEXP);
-    Rcpp::traits::input_parameter< List >::type cov_list_scaled(cov_list_scaledSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
-    Rcpp::traits::input_parameter< int >::type nr(nrSEXP);
-    rcpp_result_gen = Rcpp::wrap(varFirstTerm(beta, omega, cov_list_scaled, ind, nr));
+    rcpp_result_gen = Rcpp::wrap(findCovTwoInd(cov_list, ind_a, ind_b));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -104,6 +76,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type S(SSEXP);
     rcpp_result_gen = Rcpp::wrap(quadForm(x, S));
+    return rcpp_result_gen;
+END_RCPP
+}
+// powVec
+arma::vec powVec(arma::vec x, double power_of);
+RcppExport SEXP _ECCCM_powVec(SEXP xSEXP, SEXP power_ofSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type power_of(power_ofSEXP);
+    rcpp_result_gen = Rcpp::wrap(powVec(x, power_of));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -122,17 +106,130 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// createE
+arma::sp_mat createE(int dim_size, int i, int j);
+RcppExport SEXP _ECCCM_createE(SEXP dim_sizeSEXP, SEXP iSEXP, SEXP jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type dim_size(dim_sizeSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    rcpp_result_gen = Rcpp::wrap(createE(dim_size, i, j));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findPij
+arma::sp_mat findPij(arma::mat est_cor_mat, int first_ind, int second_ind);
+RcppExport SEXP _ECCCM_findPij(SEXP est_cor_matSEXP, SEXP first_indSEXP, SEXP second_indSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type est_cor_mat(est_cor_matSEXP);
+    Rcpp::traits::input_parameter< int >::type first_ind(first_indSEXP);
+    Rcpp::traits::input_parameter< int >::type second_ind(second_indSEXP);
+    rcpp_result_gen = Rcpp::wrap(findPij(est_cor_mat, first_ind, second_ind));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findPLambdaij
+arma::sp_mat findPLambdaij(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, int first_ind, int second_ind);
+RcppExport SEXP _ECCCM_findPLambdaij(SEXP est_cor_matSEXP, SEXP inv_d_sigSEXP, SEXP first_indSEXP, SEXP second_indSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type est_cor_mat(est_cor_matSEXP);
+    Rcpp::traits::input_parameter< arma::sp_mat >::type inv_d_sig(inv_d_sigSEXP);
+    Rcpp::traits::input_parameter< int >::type first_ind(first_indSEXP);
+    Rcpp::traits::input_parameter< int >::type second_ind(second_indSEXP);
+    rcpp_result_gen = Rcpp::wrap(findPLambdaij(est_cor_mat, inv_d_sig, first_ind, second_ind));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findLambdaPij
+arma::sp_mat findLambdaPij(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, int first_ind, int second_ind);
+RcppExport SEXP _ECCCM_findLambdaPij(SEXP est_cor_matSEXP, SEXP inv_d_sigSEXP, SEXP first_indSEXP, SEXP second_indSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type est_cor_mat(est_cor_matSEXP);
+    Rcpp::traits::input_parameter< arma::sp_mat >::type inv_d_sig(inv_d_sigSEXP);
+    Rcpp::traits::input_parameter< int >::type first_ind(first_indSEXP);
+    Rcpp::traits::input_parameter< int >::type second_ind(second_indSEXP);
+    rcpp_result_gen = Rcpp::wrap(findLambdaPij(est_cor_mat, inv_d_sig, first_ind, second_ind));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findRij
+arma::mat findRij(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, List cov_list, int i, int j);
+RcppExport SEXP _ECCCM_findRij(SEXP est_cor_matSEXP, SEXP inv_d_sigSEXP, SEXP cov_listSEXP, SEXP iSEXP, SEXP jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type est_cor_mat(est_cor_matSEXP);
+    Rcpp::traits::input_parameter< arma::sp_mat >::type inv_d_sig(inv_d_sigSEXP);
+    Rcpp::traits::input_parameter< List >::type cov_list(cov_listSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    rcpp_result_gen = Rcpp::wrap(findRij(est_cor_mat, inv_d_sig, cov_list, i, j));
+    return rcpp_result_gen;
+END_RCPP
+}
+// covToCor
+arma::mat covToCor(arma::mat cov_mat);
+RcppExport SEXP _ECCCM_covToCor(SEXP cov_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(covToCor(cov_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// diagSqrtSparse
+arma::sp_mat diagSqrtSparse(arma::mat temp_mat);
+RcppExport SEXP _ECCCM_diagSqrtSparse(SEXP temp_matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type temp_mat(temp_matSEXP);
+    rcpp_result_gen = Rcpp::wrap(diagSqrtSparse(temp_mat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// varBeta
+arma::mat varBeta(arma::vec beta, arma::mat cov_mat, List cov_list, arma::vec ind, int nr);
+RcppExport SEXP _ECCCM_varBeta(SEXP betaSEXP, SEXP cov_matSEXP, SEXP cov_listSEXP, SEXP indSEXP, SEXP nrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    Rcpp::traits::input_parameter< List >::type cov_list(cov_listSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
+    Rcpp::traits::input_parameter< int >::type nr(nrSEXP);
+    rcpp_result_gen = Rcpp::wrap(varBeta(beta, cov_mat, cov_list, ind, nr));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ECCCM_outerProdRow", (DL_FUNC) &_ECCCM_outerProdRow, 1},
     {"_ECCCM_covRows", (DL_FUNC) &_ECCCM_covRows, 3},
     {"_ECCCM_findCovVar", (DL_FUNC) &_ECCCM_findCovVar, 2},
-    {"_ECCCM_findCovBayes", (DL_FUNC) &_ECCCM_findCovBayes, 3},
     {"_ECCCM_findCovByInd", (DL_FUNC) &_ECCCM_findCovByInd, 2},
     {"_ECCCM_findCovTwoInd", (DL_FUNC) &_ECCCM_findCovTwoInd, 3},
-    {"_ECCCM_varFirstTerm", (DL_FUNC) &_ECCCM_varFirstTerm, 5},
     {"_ECCCM_quadForm", (DL_FUNC) &_ECCCM_quadForm, 2},
+    {"_ECCCM_powVec", (DL_FUNC) &_ECCCM_powVec, 2},
     {"_ECCCM_addVarGauss", (DL_FUNC) &_ECCCM_addVarGauss, 5},
+    {"_ECCCM_createE", (DL_FUNC) &_ECCCM_createE, 3},
+    {"_ECCCM_findPij", (DL_FUNC) &_ECCCM_findPij, 3},
+    {"_ECCCM_findPLambdaij", (DL_FUNC) &_ECCCM_findPLambdaij, 4},
+    {"_ECCCM_findLambdaPij", (DL_FUNC) &_ECCCM_findLambdaPij, 4},
+    {"_ECCCM_findRij", (DL_FUNC) &_ECCCM_findRij, 5},
+    {"_ECCCM_covToCor", (DL_FUNC) &_ECCCM_covToCor, 1},
+    {"_ECCCM_diagSqrtSparse", (DL_FUNC) &_ECCCM_diagSqrtSparse, 1},
+    {"_ECCCM_varBeta", (DL_FUNC) &_ECCCM_varBeta, 5},
     {NULL, NULL, 0}
 };
 
