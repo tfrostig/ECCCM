@@ -3,6 +3,7 @@
 export(analyzeRef)
 export(covMatMaker)
 export(estimateVarAdd)
+export(estimateVarAddGauss)
 export(marginalToJoint)
 export(testCoef)
 importFrom(Rcpp,sourceCpp)
