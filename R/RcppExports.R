@@ -5,20 +5,16 @@ outerProdRow <- function(X) {
     .Call(`_ECCCM_outerProdRow`, X)
 }
 
-covRows <- function(cov_mats, m, k) {
-    .Call(`_ECCCM_covRows`, cov_mats, m, k)
-}
-
 findCovVar <- function(list_cov_mat, cov_mat) {
     .Call(`_ECCCM_findCovVar`, list_cov_mat, cov_mat)
 }
 
-findCovByInd <- function(x, ind) {
-    .Call(`_ECCCM_findCovByInd`, x, ind)
-}
-
 findCovTwoInd <- function(cov_list, ind_a, ind_b) {
     .Call(`_ECCCM_findCovTwoInd`, cov_list, ind_a, ind_b)
+}
+
+findCovTwoIndV2 <- function(outer_cube, cov_mat, ind_a, ind_b) {
+    .Call(`_ECCCM_findCovTwoIndV2`, outer_cube, cov_mat, ind_a, ind_b)
 }
 
 quadForm <- function(x, S) {
@@ -53,6 +49,18 @@ findRij <- function(est_cor_mat, inv_d_sig, cov_list, i, j) {
     .Call(`_ECCCM_findRij`, est_cor_mat, inv_d_sig, cov_list, i, j)
 }
 
+findRijDiagonal <- function(est_cor_mat, inv_d_sig, cov_list, i, j) {
+    .Call(`_ECCCM_findRijDiagonal`, est_cor_mat, inv_d_sig, cov_list, i, j)
+}
+
+findVarGaussCovInd <- function(cov_mat, i, j) {
+    .Call(`_ECCCM_findVarGaussCovInd`, cov_mat, i, j)
+}
+
+findRijGauss <- function(est_cor_mat, inv_d_sig, est_cov_mat, i, j) {
+    .Call(`_ECCCM_findRijGauss`, est_cor_mat, inv_d_sig, est_cov_mat, i, j)
+}
+
 covToCor <- function(cov_mat) {
     .Call(`_ECCCM_covToCor`, cov_mat)
 }
@@ -63,5 +71,13 @@ diagSqrtSparse <- function(temp_mat) {
 
 varBeta <- function(beta, cov_mat, cov_list, ind, nr) {
     .Call(`_ECCCM_varBeta`, beta, cov_mat, cov_list, ind, nr)
+}
+
+varBetaDiag <- function(beta, cov_mat, cov_list, ind, nr) {
+    .Call(`_ECCCM_varBetaDiag`, beta, cov_mat, cov_list, ind, nr)
+}
+
+varBetaGauss <- function(beta, cov_mat, ind, nr) {
+    .Call(`_ECCCM_varBetaGauss`, beta, cov_mat, ind, nr)
 }
 

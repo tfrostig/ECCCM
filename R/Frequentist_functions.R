@@ -22,7 +22,8 @@ analyzeRef <- function(marg.beta.hat,
                        sigma.method         = 'conservative',
                        method.filter        = 'none',
                        method.test          = 'BH',
-                       qu                   = 0.05) {
+                       qu                   = 0.05,
+                       to.diag              = TRUE) {
   p   <- ncol(x.r)
   n.r <- nrow(x.r)
   cov.list.r  <- list('cov' = cov(x.r), 'cor' = cor(x.r))
@@ -71,16 +72,19 @@ analyzeRef <- function(marg.beta.hat,
                                          cov.mat        = cov.list.r$cov,
                                          n.o            = n.o,
                                          n.r            = n.r,
-                                         ind            = ind.beta.pass)
+                                         ind.vec        = ind.beta.pass,
+                                         diag.flag      = to.diag)
+
     added.var       <- marg.to.joint$naive.var.beta.hat + diag(est.var$total)
     test.correct.df <- testCoef(est.beta = threshold.beta.est,
                                 var.beta = added.var,
                                 method   = method.test)
+
     return(list(test.correct                = test.correct.df,
                 add.var                     = est.var$total,
                 test.naive                  = test.df,
                 var.beta                    = c('number.of.coef' = length(ind.beta.pass),
-                                                'prop.weight'    = sum(test.df[ind.beta.pass,3]^2) / sum(test.df[ ,3]^2)),
+                                                'prop.weight'    = sum(test.df[ind.beta.pass, 3]^2) / sum(test.df[ ,3]^2)),
                 sigma                       = sigma.est))
   }
 }
@@ -98,10 +102,11 @@ testCoef <- function(est.beta, var.beta, method = 'BH') {
   test.statistic <- est.beta / sqrt(var.beta)
   pval.no.adjust <- (2 * (1 - pnorm(abs(test.statistic))))
   pval.adjust    <- p.adjust(pval.no.adjust, method = method)
-  res.mat        <- cbind('test.statistic'  = test.statistic,
+  res.mat        <- cbind('beta'            = est.beta,
+                          'test.statistic'  = test.statistic,
                           'pval.unadjusted' = pval.no.adjust,
-                          'temp'            = pval.adjust)
-  colnames(res.mat)[3] <- paste('pval.adjusted', method, sep = '.')
+                          'pval.adjusted'   = pval.adjust)
+  colnames(res.mat)[4] <- paste('pval.adjusted', method, sep = '.')
   return(data.frame(res.mat))
 }
 
@@ -161,85 +166,86 @@ marginalToJoint <- function(marg.beta.hat,
 }
 
 
-# #' analyzeRefGauss - Conduct full analysis based on reference panel under the assumption of Gaussian reference
-# #' @param marg.beta.hat Marginal regression coeffcients, inner product of G_o and y divided by the number of observations in original study
-# #' @param ld.mat Covariance matrix based on the reference panel
-# #' @param n.r The number of observation in reference panel
-# #' @param n.o The number of observations in original study
-# #' @param sigma.method String indicating how to estimate sigma, currently supports three methods, 'conservative', sigma is estimated as 1.
-# #' 'estimate' the usual estimator of the variance (assuming y is scaled sigma = 1 - var(x.r beta_mc)), and 'semi.conservative' which is similar to
-# #' the 'estimate' method, but the beta_mc is thresholded.
-# #' @param method.filter multiple adjustment method to use in thresholding of the coefficient (see p.adjust)
-# #' @param method.test multiple adjustment method  to use when testing the adjusted coefficients (see p.adjust)
-# #' @param qu Coefficients with p-value lower than 'qu' are thresholded to 0.
-# #' @return list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value.
-# #' `test.naive` data.frame with the adjusted coefficeint but not adjusted variance, with two sided testing p-value.
-# #' `add.var` the additional variance, `sigma` the estimated sigma.
-# #' `var.omega.beta` a vector with the number of coefficient used and the proportion of weight used.
-# #' `covariance.regularization` a list containing the type of regularization used, the number of CV iterations, and the CV restults.
-# analyzeRefGauss<- function(marg.beta.hat,
-#                            ld.mat,
-#                            n.o,
-#                            n.r,
-#                            sigma.method         = 'conservative',
-#                            method.filter        = 'none',
-#                            method.test          = 'BH',
-#                            qu                   = 1,
-#                            B                    = 200) {
-#   p             <- ncol(ld.mat)
-#   cov.list.r    <- list('cov' = ld.mat, 'omega' = solve(ld.mat))
-#   marg.to.joint <- marginalToJoint(marg.beta.hat = marg.beta.hat,
-#                                    x.r = x.r,
-#                                    n.o = n.o,
-#                                    cov.r = cov.list.r$cov,
-#                                    inv.r = cov.list.r$omega,
-#                                    sigma = 1)
-#   threshold.beta.est <- rep(0, p)
-#   ### Transform Beta to multivarite
-#   if (sigma.method == 'conservative') {
-#     test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat,
-#                         var.beta = marg.to.joint$naive.var.beta.hat,
-#                         method   = method.filter)
-#     ind.beta.pass                     <- which(test.df[ ,3] < qu)
-#     sigma.est                         <- 1
-#     threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
-#   }
-#   if (sigma.method == 'estimate') {
-#     sigma.est         <- drop(sqrt(1 - marg.to.joint$est.beta.hat %*% cov.list.r$cov %*% marg.to.joint$est.beta.hat))
-#     test.df           <- testCoef(est.beta = marg.to.joint$est.beta.hat,
-#                                   var.beta = marg.to.joint$naive.var.beta.hat * sigma.est,
-#                                   method   = method.filter)
-#     ind.beta.pass <- which(test.df[ ,3] < qu)
-#     threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
-#   }
-#   if (sigma.method == 'semi.conservative') {
-#     test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat,
-#                         var.beta = marg.to.joint$naive.var.beta.hat,
-#                         method   = method.filter)
-#     ind.beta.pass                     <- which(test.df[ ,3] < qu)
-#     threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
-#     sigma.est         <- drop(sqrt(1 - marg.to.joint$est.beta.hat %*% cov.list.r$cov %*% marg.to.joint$est.beta.hat))
-#   }
-#   if (length(ind.beta.pass) == 0) {
-#     return(list(test.correct    = test.df,
-#                 add.var         = NULL,
-#                 test.naive      = test.df,
-#                 sigma.est       = sigma.est))
-#   }
-#   if (length(ind.beta.pass) > 0) {
-#     ### Applying the shrinkage of beta
-#     est.var <- addVarGauss(beta        = ((n.r - p - 1) / n.r) * threshold.beta.est,
-#                            cov_mat     = cov.list.r$cov,
-#                            omega       = cov.list.r$omega,
-#                            n_o         = n.o,
-#                            n_r         = n.r)
-#     test.correct.df <- testCoef(est.beta = threshold.beta.est,
-#                                 var.beta = marg.to.joint$naive.var.beta.hat + diag(est.var),
-#                                 method   = method.test)
-#
-#     return(list(test.correct                = test.correct.df,
-#                 add.var                     = est.var,
-#                 test.naive                  = test.df,
-#                 sigma                       = sigma.est))
-#   }
-# }
+#' analyzeRefGauss - Conduct full analysis based on reference panel under the assumption of Gaussian reference
+#' @param marg.beta.hat Marginal regression coefficients, inner product of G_o and y divided by the number of observations in original study
+#' @param ld.mat Covariance matrix based on the reference panel
+#' @param n.r The number of observation in reference panel
+#' @param n.o The number of observations in original study
+#' @param sigma.method String indicating how to estimate sigma, currently supports three methods, 'conservative', sigma is estimated as 1.
+#' 'estimate' the usual estimator of the variance (assuming y is scaled sigma = 1 - var(x.r beta_mc)), and 'semi.conservative' which is similar to
+#' the 'estimate' method, but the beta_mc is thresholded.
+#' @param method.filter multiple adjustment method to use in thresholding of the coefficient (see p.adjust)
+#' @param method.test multiple adjustment method  to use when testing the adjusted coefficients (see p.adjust)
+#' @param qu Coefficients with p-value lower than 'qu' are thresholded to 0.
+#' @return list containing `test.correct` data.frame with the adjusted coefficient and adjusted variance, with two sided testing p-value.
+#' `test.naive` data.frame with the adjusted coefficient but not adjusted variance, with two sided testing p-value.
+#' `add.var` the additional variance, `sigma` the estimated sigma.
+#' `var.omega.beta` a vector with the number of coefficient used and the proportion of weight used.
+analyzeRefGauss<- function(marg.beta.hat,
+                           ld.mat,
+                           n.o,
+                           n.r,
+                           sigma.method         = 'conservative',
+                           method.filter        = 'none',
+                           method.test          = 'BH',
+                           qu                   = 1) {
+  p             <- ncol(ld.mat)
+  cov.list.r    <- list('cov' = ld.mat, 'omega' = solve(ld.mat))
+  marg.to.joint <- marginalToJoint(marg.beta.hat = marg.beta.hat,
+                                   n.o = n.o,
+                                   cor.r = cov2cor(cov.list.r$cov),
+                                   sigma = 1)
+  threshold.beta.est <- rep(0, p)
+  ### Transform Beta to multivarite
+  if (sigma.method == 'conservative') {
+    test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat,
+                        var.beta = marg.to.joint$naive.var.beta.hat,
+                        method   = method.filter)
+    ind.beta.pass                     <- which(test.df[ ,3] < qu)
+    sigma.est                         <- 1
+    threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
+  }
+  if (sigma.method == 'estimate') {
+    sigma.est         <- drop(sqrt(1 - marg.to.joint$est.beta.hat %*% cov.list.r$cov %*% marg.to.joint$est.beta.hat))
+    test.df           <- testCoef(est.beta = marg.to.joint$est.beta.hat,
+                                  var.beta = marg.to.joint$naive.var.beta.hat * sigma.est,
+                                  method   = method.filter)
+    ind.beta.pass <- which(test.df[ ,3] < qu)
+    threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
+  }
+  if (sigma.method == 'semi.conservative') {
+    test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat,
+                        var.beta = marg.to.joint$naive.var.beta.hat,
+                        method   = method.filter)
+    ind.beta.pass                     <- which(test.df[ ,3] < qu)
+    threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
+    sigma.est         <- drop(sqrt(1 - marg.to.joint$est.beta.hat %*% cov.list.r$cov %*% marg.to.joint$est.beta.hat))
+  }
+  if (length(ind.beta.pass) == 0) {
+    return(list(test.correct    = test.df,
+                add.var         = NULL,
+                test.naive      = test.df,
+                sigma.est       = sigma.est))
+  }
+  if (length(ind.beta.pass) > 0) {
+    ### Applying the shrinkage of beta
+    est.var <- estimateVarAddGauss(beta.mc     = ((n.r) / (n.r - p - 1)) * threshold.beta.est,
+                                   cov.mat     = cov.list.r$cov,
+                                   n.o         = n.o,
+                                   n.r         = n.r,
+                                   ind.vec     = ind.beta.pass)
+    test.correct.df <- testCoef(est.beta = threshold.beta.est,
+                                var.beta = marg.to.joint$naive.var.beta.hat + diag(est.var$total),
+                                method   = method.test)
+
+    return(list(test.correct                = test.correct.df,
+                add.var                     = est.var,
+                test.naive                  = test.df,
+                sigma                       = sigma.est))
+  }
+}
+
+
+
+
+

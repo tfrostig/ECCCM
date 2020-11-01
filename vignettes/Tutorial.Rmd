@@ -83,26 +83,24 @@ The naive variance estimator of this estimate is $\frac{\hat{\sigma}^2}{n_o}\hat
 After we have obtained our covariance matrix we can transform the marginal associations into multivariate assoications using `ECCCM::marginalToJoint`. 
 
 ```{r}
-cov.list.r    <- covMatMaker(G.ref, method.threshold = 'soft', threshold.seq = seq(0.01, 0.1, 0.03), 
-                             cv.threshold = 5)
-### Transform Beta to multivarite
-marg.to.joint <- marginalToJoint(marg.beta.hat = beta.report, 
-                                 x.r = G.ref, 
-                                 n.o = n.org, 
-                                 cov.r = cov.list.r$cov, 
-                                 inv.r = cov.list.r$omega, 
-                                 sigma = 1)
+# cov.list.r    <- covMatMaker(G.ref, method.threshold = 'soft', threshold.seq = seq(0.01, 0.1, 0.03), 
+#                              cv.threshold = 5)
+# ### Transform Beta to multivarite
+# marg.to.joint <- marginalToJoint(marg.beta.hat = beta.report, 
+#                                  n.o = n.org, 
+#                                  cov.r = cov.list.r$cov, 
+#                                  sigma = 1)
 ```
 
 To test the coefficients we can use the function `ECCCM::testCoef`, which conduct a two sided normal test. 
 
 ```{r}
-test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat, 
-                    var.beta = marg.to.joint$naive.var.beta.hat,
-                    method = 'BH')
-
-
-which(test.df[ ,3] < 0.05)
+# test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat, 
+#                     var.beta = marg.to.joint$naive.var.beta.hat,
+#                     method = 'BH')
+# 
+# 
+# which(test.df[ ,3] < 0.05)
 ```
 
 After correction for multiplicity, we obtain 5 significant SNPs at locations `1, 6, 9, 15 and 30`, implying an FDR of $0.4$. We need to adjust for the variance added from using the reference panel. 
@@ -138,15 +136,15 @@ While assuming that $\beta$ is sparse is reasonable, the same can't be thought o
 
 
 ```{r}
-threshold.beta.est <- rep(0, snp.num)
-threshold.beta.est[which(test.df[ ,3] < 0.05)] <-  marg.to.joint$est.beta.hat[which(test.df[ ,3] < 0.05)]
-
-beta.omega <- cov.list.r$omega %*% threshold.beta.est
-weights    <- (beta.omega)^2 / sum((beta.omega)^2)
-
-sort.weight <- sort(weights, decreasing = TRUE, index.return = TRUE)
-
-sum(sort.weight$x[1:8])
+# threshold.beta.est <- rep(0, snp.num)
+# threshold.beta.est[which(test.df[ ,3] < 0.05)] <-  marg.to.joint$est.beta.hat[which(test.df[ ,3] < 0.05)]
+# 
+# beta.omega <- cov.list.r$omega %*% threshold.beta.est
+# weights    <- (beta.omega)^2 / sum((beta.omega)^2)
+# 
+# sort.weight <- sort(weights, decreasing = TRUE, index.return = TRUE)
+# 
+# sum(sort.weight$x[1:8])
 ```
 
 After thresholding, 8 indices of $\Sigma^{-1} \beta$ are enough to capture `0.93` of the vector norm. 
@@ -226,12 +224,12 @@ The function to use is `analyzeRefGauss`, it has less parameters since it does n
 
 
 ```{r}
-head(analyzeRefGauss(marg.beta.hat = beta.report, 
-                ld.mat        = cov(G.ref), 
-                n.o           = n.org,
-                n.r           = nrow(G.ref),
-                sigma.method  = 'conservative', 
-                qu            = 0.05)$test.correct)
+# head(analyzeRefGauss(marg.beta.hat = beta.report, 
+#                 ld.mat        = cov(G.ref), 
+#                 n.o           = n.org,
+#                 n.r           = nrow(G.ref),
+#                 sigma.method  = 'conservative', 
+#                 qu            = 0.05)$test.correct)
 ```
 
 

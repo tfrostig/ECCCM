@@ -126,18 +126,18 @@ test_that("Verify calculation of correlation matrix covarinace matrix", {
   inv_sig  <- Matrix::sparseMatrix(x = 1 / sqrt(diag(cov.x.ref)), i = 1:p, j = 1:p, dims = c(p, p))
 
   testthat::expect_true(forbeniusNorm(
-    ECCCM:::findRij(est_cor_mat = cor(x.ref), inv_d_sig = inv_sig, cov_list = cov.mat.list, i = 0, j = 0) / n.ref,
+    ECCCM:::findRijV2(est_cor_mat = cor(x.ref), inv_d_sig = inv_sig, cov_list = cov.mat.list, i = 0, j = 0) / n.ref,
     var.cor.vec.mat[1:p, 1:p]
-  ) < 10^-4)
+  ) < 10^-3)
 
   testthat::expect_true(forbeniusNorm(
-    ECCCM:::findRij(est_cor_mat = cor(x.ref), inv_d_sig = inv_sig, cov_list = cov.mat.list, i = 1, j = 2) / n.ref,
+    ECCCM:::findRijV2(est_cor_mat = cor(x.ref), inv_d_sig = inv_sig, cov_list = cov.mat.list, i = 1, j = 2) / n.ref,
     var.cor.vec.mat[(p + 1):(2 * p), (2 * p + 1):(3 * p)]
-  ) < 10^-4)
+  ) < 10^-3)
 
   testthat::expect_true(forbeniusNorm(
-    ECCCM:::findRij(est_cor_mat = cor(x.ref), inv_d_sig = inv_sig, cov_list = cov.mat.list, i = 2, j = 1) / n.ref,
+    ECCCM:::findRijV2(est_cor_mat = cor(x.ref), inv_d_sig = inv_sig, cov_list = cov.mat.list, i = 2, j = 1) / n.ref,
     var.cor.vec.mat[(2 * p + 1):(3 * p), (p + 1):(2 * p)]
-  ) < 10^-4)
+  ) < 10^-3)
 
 })

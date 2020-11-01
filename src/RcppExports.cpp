@@ -17,19 +17,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// covRows
-arma::mat covRows(List cov_mats, int m, int k);
-RcppExport SEXP _ECCCM_covRows(SEXP cov_matsSEXP, SEXP mSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List >::type cov_mats(cov_matsSEXP);
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(covRows(cov_mats, m, k));
-    return rcpp_result_gen;
-END_RCPP
-}
 // findCovVar
 arma::mat findCovVar(List list_cov_mat, arma::mat cov_mat);
 RcppExport SEXP _ECCCM_findCovVar(SEXP list_cov_matSEXP, SEXP cov_matSEXP) {
@@ -39,18 +26,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< List >::type list_cov_mat(list_cov_matSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
     rcpp_result_gen = Rcpp::wrap(findCovVar(list_cov_mat, cov_mat));
-    return rcpp_result_gen;
-END_RCPP
-}
-// findCovByInd
-arma::mat findCovByInd(arma::mat x, int ind);
-RcppExport SEXP _ECCCM_findCovByInd(SEXP xSEXP, SEXP indSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type ind(indSEXP);
-    rcpp_result_gen = Rcpp::wrap(findCovByInd(x, ind));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -64,6 +39,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type ind_a(ind_aSEXP);
     Rcpp::traits::input_parameter< int >::type ind_b(ind_bSEXP);
     rcpp_result_gen = Rcpp::wrap(findCovTwoInd(cov_list, ind_a, ind_b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findCovTwoIndV2
+arma::mat findCovTwoIndV2(arma::cube outer_cube, arma::mat cov_mat, int ind_a, int ind_b);
+RcppExport SEXP _ECCCM_findCovTwoIndV2(SEXP outer_cubeSEXP, SEXP cov_matSEXP, SEXP ind_aSEXP, SEXP ind_bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::cube >::type outer_cube(outer_cubeSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    Rcpp::traits::input_parameter< int >::type ind_a(ind_aSEXP);
+    Rcpp::traits::input_parameter< int >::type ind_b(ind_bSEXP);
+    rcpp_result_gen = Rcpp::wrap(findCovTwoIndV2(outer_cube, cov_mat, ind_a, ind_b));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -175,6 +164,49 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// findRijDiagonal
+arma::mat findRijDiagonal(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, List cov_list, int i, int j);
+RcppExport SEXP _ECCCM_findRijDiagonal(SEXP est_cor_matSEXP, SEXP inv_d_sigSEXP, SEXP cov_listSEXP, SEXP iSEXP, SEXP jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type est_cor_mat(est_cor_matSEXP);
+    Rcpp::traits::input_parameter< arma::sp_mat >::type inv_d_sig(inv_d_sigSEXP);
+    Rcpp::traits::input_parameter< List >::type cov_list(cov_listSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    rcpp_result_gen = Rcpp::wrap(findRijDiagonal(est_cor_mat, inv_d_sig, cov_list, i, j));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findVarGaussCovInd
+arma::mat findVarGaussCovInd(arma::mat cov_mat, int i, int j);
+RcppExport SEXP _ECCCM_findVarGaussCovInd(SEXP cov_matSEXP, SEXP iSEXP, SEXP jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    rcpp_result_gen = Rcpp::wrap(findVarGaussCovInd(cov_mat, i, j));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findRijGauss
+arma::mat findRijGauss(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, arma::mat est_cov_mat, int i, int j);
+RcppExport SEXP _ECCCM_findRijGauss(SEXP est_cor_matSEXP, SEXP inv_d_sigSEXP, SEXP est_cov_matSEXP, SEXP iSEXP, SEXP jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type est_cor_mat(est_cor_matSEXP);
+    Rcpp::traits::input_parameter< arma::sp_mat >::type inv_d_sig(inv_d_sigSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type est_cov_mat(est_cov_matSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    rcpp_result_gen = Rcpp::wrap(findRijGauss(est_cor_mat, inv_d_sig, est_cov_mat, i, j));
+    return rcpp_result_gen;
+END_RCPP
+}
 // covToCor
 arma::mat covToCor(arma::mat cov_mat);
 RcppExport SEXP _ECCCM_covToCor(SEXP cov_matSEXP) {
@@ -212,13 +244,41 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// varBetaDiag
+arma::mat varBetaDiag(arma::vec beta, arma::mat cov_mat, List cov_list, arma::vec ind, int nr);
+RcppExport SEXP _ECCCM_varBetaDiag(SEXP betaSEXP, SEXP cov_matSEXP, SEXP cov_listSEXP, SEXP indSEXP, SEXP nrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    Rcpp::traits::input_parameter< List >::type cov_list(cov_listSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
+    Rcpp::traits::input_parameter< int >::type nr(nrSEXP);
+    rcpp_result_gen = Rcpp::wrap(varBetaDiag(beta, cov_mat, cov_list, ind, nr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// varBetaGauss
+arma::mat varBetaGauss(arma::vec beta, arma::mat cov_mat, arma::vec ind, int nr);
+RcppExport SEXP _ECCCM_varBetaGauss(SEXP betaSEXP, SEXP cov_matSEXP, SEXP indSEXP, SEXP nrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type cov_mat(cov_matSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type ind(indSEXP);
+    Rcpp::traits::input_parameter< int >::type nr(nrSEXP);
+    rcpp_result_gen = Rcpp::wrap(varBetaGauss(beta, cov_mat, ind, nr));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ECCCM_outerProdRow", (DL_FUNC) &_ECCCM_outerProdRow, 1},
-    {"_ECCCM_covRows", (DL_FUNC) &_ECCCM_covRows, 3},
     {"_ECCCM_findCovVar", (DL_FUNC) &_ECCCM_findCovVar, 2},
-    {"_ECCCM_findCovByInd", (DL_FUNC) &_ECCCM_findCovByInd, 2},
     {"_ECCCM_findCovTwoInd", (DL_FUNC) &_ECCCM_findCovTwoInd, 3},
+    {"_ECCCM_findCovTwoIndV2", (DL_FUNC) &_ECCCM_findCovTwoIndV2, 4},
     {"_ECCCM_quadForm", (DL_FUNC) &_ECCCM_quadForm, 2},
     {"_ECCCM_powVec", (DL_FUNC) &_ECCCM_powVec, 2},
     {"_ECCCM_addVarGauss", (DL_FUNC) &_ECCCM_addVarGauss, 5},
@@ -227,9 +287,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ECCCM_findPLambdaij", (DL_FUNC) &_ECCCM_findPLambdaij, 4},
     {"_ECCCM_findLambdaPij", (DL_FUNC) &_ECCCM_findLambdaPij, 4},
     {"_ECCCM_findRij", (DL_FUNC) &_ECCCM_findRij, 5},
+    {"_ECCCM_findRijDiagonal", (DL_FUNC) &_ECCCM_findRijDiagonal, 5},
+    {"_ECCCM_findVarGaussCovInd", (DL_FUNC) &_ECCCM_findVarGaussCovInd, 3},
+    {"_ECCCM_findRijGauss", (DL_FUNC) &_ECCCM_findRijGauss, 5},
     {"_ECCCM_covToCor", (DL_FUNC) &_ECCCM_covToCor, 1},
     {"_ECCCM_diagSqrtSparse", (DL_FUNC) &_ECCCM_diagSqrtSparse, 1},
     {"_ECCCM_varBeta", (DL_FUNC) &_ECCCM_varBeta, 5},
+    {"_ECCCM_varBetaDiag", (DL_FUNC) &_ECCCM_varBetaDiag, 5},
+    {"_ECCCM_varBetaGauss", (DL_FUNC) &_ECCCM_varBetaGauss, 4},
     {NULL, NULL, 0}
 };
 

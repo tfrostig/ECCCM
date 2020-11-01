@@ -11,7 +11,8 @@ analyzeRef(
   sigma.method = "conservative",
   method.filter = "none",
   method.test = "BH",
-  qu = 0.05
+  qu = 0.05,
+  to.diag = TRUE
 )
 }
 \arguments{
