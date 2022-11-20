@@ -11,18 +11,15 @@ analyzeRef(
   sigma.method = "conservative",
   method.filter = "none",
   method.test = "BH",
-  method.threshold = "soft",
-  ncv.threshold = 5,
-  threshold.cov.seq = seq(10^(-5), 0.2, 0.05),
   qu = 0.05,
-  explained.omega.beta = 0.9,
-  max.omega.beta = 20
+  to.diag = FALSE,
+  is.marg = TRUE
 )
 }
 \arguments{
 \item{marg.beta.hat}{Marginal regression coeffcients, inner product of G_o and y divided by the number of observations in original study}
 
-\item{x.r}{Reference panel}
+\item{x.r}{Reference panel must be centered}
 
 \item{n.o}{The number of observations in original study}
 
@@ -34,24 +31,15 @@ the 'estimate' method, but the beta_mc is thresholded.}
 
 \item{method.test}{multiple adjustment method  to use when testing the adjusted coefficients (see p.adjust)}
 
-\item{method.threshold}{which type of threshold to apply on the covariance matrix, currently supports `soft`, `hard` and `none`. Default to `soft`.}
-
-\item{ncv.threshold}{the number of repetitions for 2-fold random cross validations for each threshold value.}
-
-\item{threshold.cov.seq}{user-defined threshold value. If it is a vector of regularization values, it automatically selects one that minimizes cross validation risk.}
-
 \item{qu}{P-value threshold.}
 
-\item{explained.omega.beta}{Minimal weight for thresholding omega.beta}
-
-\item{max.omega.beta}{Maximum number of cofficients taken from omega.beta}
+\item{threshold.cov.seq}{user-defined threshold value. If it is a vector of regularization values, it automatically selects one that minimizes cross validation risk.}
 }
 \value{
 list containing `test.correct` data.frame with the adjusted coefficeint and adjusted variance, with two sided testing p-value.
 `test.naive` data.frame with the adjusted coefficeint but not adjusted variance, with two sided testing p-value.
  `add.var` the additional variance, `sigma` the estimated sigma.
  `var.omega.beta` a vector with the number of coefficient used and the proportion of weight used.
- `covariance.regularization` a list containing the type of regularization used, the number of CV iterations, and the CV restults.
 }
 \description{
 analyzeRef - Conduct full analysis based on reference panel

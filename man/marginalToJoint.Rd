@@ -2,37 +2,27 @@
 % Please edit documentation in R/Frequentist_functions.R
 \name{marginalToJoint}
 \alias{marginalToJoint}
-\title{marginalToJoint - Transforms maringal coefficients estimates to joint coefficients estimates}
+\title{marginalToJoint - Transforms marginal coefficients estimates to joint coefficients estimates}
 \usage{
-marginalToJoint(
-  marg.beta.hat,
-  x.r,
-  cov.r,
-  inv.r,
-  n.o,
-  sigma = 1,
-  is.scaled = TRUE
-)
+marginalToJoint(marg.beta.hat, cor.r, n.o, sigma = 1)
 }
 \arguments{
-\item{marg.beta.hat}{Estiamted coefficeint resulting from marginal regression}
+\item{marg.beta.hat}{Estimated coefficients resulting from marginal regression}
+
+\item{n.o}{Number of observation in original study}
+
+\item{sigma}{Estimated variance of epsilon, since y is assumed to be normalized then defaults to 1}
 
 \item{x.r}{Reference panel}
 
 \item{cov.r}{Estimated covariance of x.r}
 
 \item{inv.r}{Inverse of cov.r}
-
-\item{n.o}{Number of observation in original study}
-
-\item{sigma}{Estimated variance of epsilon, since y is assumed to be normalized then defaults to 1}
-
-\item{is.scaled}{Boolean flag, is original study X and y are scaled. For now only supports TRUE.}
 }
 \value{
 data.frame containing column `est.beta.hat` estimate of beta, and `naive.var.beta.hat`
 the variance of the estimate not taking into account the use of the reference panel
 }
 \description{
-marginalToJoint - Transforms maringal coefficients estimates to joint coefficients estimates
+marginalToJoint - Transforms marginal coefficients estimates to joint coefficients estimates
 }

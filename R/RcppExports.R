@@ -5,39 +5,79 @@ outerProdRow <- function(X) {
     .Call(`_ECCCM_outerProdRow`, X)
 }
 
-covRows <- function(cov_mats, m, k) {
-    .Call(`_ECCCM_covRows`, cov_mats, m, k)
-}
-
 findCovVar <- function(list_cov_mat, cov_mat) {
     .Call(`_ECCCM_findCovVar`, list_cov_mat, cov_mat)
 }
 
-findCovBayes <- function(list_cov_mat, cov_mat, delta_gamma) {
-    .Call(`_ECCCM_findCovBayes`, list_cov_mat, cov_mat, delta_gamma)
+findCovTwoInd <- function(cov_list, ind_a, ind_b) {
+    .Call(`_ECCCM_findCovTwoInd`, cov_list, ind_a, ind_b)
 }
 
-findCovByInd <- function(x, ind) {
-    .Call(`_ECCCM_findCovByInd`, x, ind)
-}
-
-findCovTwoInd <- function(x, ind_a, ind_b) {
-    .Call(`_ECCCM_findCovTwoInd`, x, ind_a, ind_b)
-}
-
-varFirstTerm <- function(beta, omega, x, ind) {
-    .Call(`_ECCCM_varFirstTerm`, beta, omega, x, ind)
-}
-
-varSecondTerm <- function(omega_beta, x, ind) {
-    .Call(`_ECCCM_varSecondTerm`, omega_beta, x, ind)
+findCovTwoIndV2 <- function(outer_cube, cov_mat, ind_a, ind_b) {
+    .Call(`_ECCCM_findCovTwoIndV2`, outer_cube, cov_mat, ind_a, ind_b)
 }
 
 quadForm <- function(x, S) {
     .Call(`_ECCCM_quadForm`, x, S)
 }
 
+powVec <- function(x, power_of) {
+    .Call(`_ECCCM_powVec`, x, power_of)
+}
+
 addVarGauss <- function(cov_mat, omega, beta, n_r, n_o) {
     .Call(`_ECCCM_addVarGauss`, cov_mat, omega, beta, n_r, n_o)
+}
+
+createE <- function(dim_size, i, j) {
+    .Call(`_ECCCM_createE`, dim_size, i, j)
+}
+
+findPij <- function(est_cor_mat, first_ind, second_ind) {
+    .Call(`_ECCCM_findPij`, est_cor_mat, first_ind, second_ind)
+}
+
+findPLambdaij <- function(est_cor_mat, inv_d_sig, first_ind, second_ind) {
+    .Call(`_ECCCM_findPLambdaij`, est_cor_mat, inv_d_sig, first_ind, second_ind)
+}
+
+findLambdaPij <- function(est_cor_mat, inv_d_sig, first_ind, second_ind) {
+    .Call(`_ECCCM_findLambdaPij`, est_cor_mat, inv_d_sig, first_ind, second_ind)
+}
+
+findRij <- function(est_cor_mat, inv_d_sig, cov_list, i, j) {
+    .Call(`_ECCCM_findRij`, est_cor_mat, inv_d_sig, cov_list, i, j)
+}
+
+findVarGaussCovInd <- function(cov_mat, i, j) {
+    .Call(`_ECCCM_findVarGaussCovInd`, cov_mat, i, j)
+}
+
+findRijGauss <- function(est_cor_mat, inv_d_sig, est_cov_mat, i, j) {
+    .Call(`_ECCCM_findRijGauss`, est_cor_mat, inv_d_sig, est_cov_mat, i, j)
+}
+
+findRijDiagonal <- function(est_cor_mat, inv_d_sig, cov_list, i, j) {
+    .Call(`_ECCCM_findRijDiagonal`, est_cor_mat, inv_d_sig, cov_list, i, j)
+}
+
+covToCor <- function(cov_mat) {
+    .Call(`_ECCCM_covToCor`, cov_mat)
+}
+
+diagSqrtSparse <- function(temp_mat) {
+    .Call(`_ECCCM_diagSqrtSparse`, temp_mat)
+}
+
+varBeta <- function(beta, cov_mat, cov_list, ind) {
+    .Call(`_ECCCM_varBeta`, beta, cov_mat, cov_list, ind)
+}
+
+varBetaGauss <- function(beta, cov_mat, ind) {
+    .Call(`_ECCCM_varBetaGauss`, beta, cov_mat, ind)
+}
+
+varBetaDiag <- function(beta, cov_mat, cov_list, ind, nr) {
+    .Call(`_ECCCM_varBetaDiag`, beta, cov_mat, cov_list, ind, nr)
 }
 

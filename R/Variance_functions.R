@@ -1,30 +1,76 @@
-
-findOmegaBeta <- function(beta.mc, omega, sigma, n.o) {
-  omega.beta       <-  cbind('omega_beta'     = omega %*% beta.mc,
-                             'omega_beta_var' = (sigma^2 / n.o) * diag(omega %*% omega %*% omega))
-}
-
-
 #' estimateVarAdd - estimation of additional variance
 #' @param beta.mc The estimate of coefficient of joint regression (transformed marginal beta)
-#' @param beta.omega Transformed `beta.mc` basically, just `beta.omega %*% omega`, where omega is the estimated inverse covariance matrix.
-#' @param x.r The reference panel.
-#' @param ind.beta.mc Indices of which `beta.mc` to consider, in the bayesian scenario determined by vector gamma.
-#' @param ind.beta.omega Indices of which `beta.omega` to consider
-#' @param omega - Inverse of estimated covaraince matrix
-#' @param n.o - Number of observation in original study
+#' @param cov.list List of covariance matrices
+#' @param cov.mat Estimated covarinace matrix
+#' @param n.o Number of observation in original study
+#' @param n.r Number of observation in reference study
+#' @param ind.vec Indices of which `beta.mc` to consider
+#' @param diag.flag - Flag, to estimate the variance of the covarinace matrix based on the main diagonal, or full estimation.
 #' @return A list containing the varius variance terms, including the naive. `total` is the combined added variance from
 #' using the reference panel
 #' @export
 
-estimateVarAdd <- function(beta.mc, beta.omega, x.r, ind.beta.mc, ind.beta.omega, omega, n.o) {
+estimateVarAdd <- function(beta.mc, cov.list, cov.mat, n.o, n.r, ind.vec, diag.flag = F) {
+  ### Finding the variance of (beta' \prod \Sigma^{-1}) A (beta' prod \Sigma^{-1})
+  if (!diag.flag) {
+    temp.var     <- varBeta(beta     = beta.mc,
+                            cov_mat  = cov.mat,
+                            cov_list = cov.list,
+                            ind = ind.vec)
+  }
+  if (diag.flag) {
+    temp.var     <- varBetaDiag(beta     = beta.mc,
+                                cov_mat  = cov.mat,
+                                cov_list = cov.list,
+                                ind = ind.vec,
+                                nr  = n.r)
+  }
   ### Term 1
-  term.1.var.r <- varFirstTerm(beta.mc, omega, x = x.r, ind = ind.beta.mc)  / nrow(x.r)
+  term.1.var.r <- temp.var / n.r
   ### Term 2
-  term.2.var.r <- varSecondTerm(beta.omega, x = x.r, ind = ind.beta.omega) / n.o
+  term.2.var.r <- temp.var / n.o
   ### Naive var
   return(list('var.term.1' = term.1.var.r,
               'var.term.2' = term.2.var.r,
               'total'      = (term.1.var.r + term.2.var.r)))
 
 }
+
+
+
+
+
+
+#' estimateVarAddGauss - estimation of additional variance
+#' @param beta.mc The estimate of coefficient of joint regression (transformed marginal beta)
+#' @param cov.list.boot Bootstrap of scaled covariance matrices.
+#' @param ind.beta.mc Indices of which `beta.mc` to consider, in the bayesian scenario determined by vector gamma.
+#' @param ind.beta.omega Indices of which `beta.omega` to consider
+#' @param omega - Inverse of estimated covariance matrix
+#' @param n.o - Number of observation in original study
+# #' @param diag.flag - Flag, to estimate the variance of the covarinace matrix based on the main diagonal, or full estimation.
+#' @return A list containing the varius variance terms, including the naive. `total` is the combined added variance from
+#' using the reference panel
+#' @export
+
+estimateVarAddGauss <- function(beta.mc, cov.mat, n.o, n.r, ind.vec) {
+  ### Finding the variance of (beta' \prod \Sigma^{-1}) A (beta' prod \Sigma^{-1})
+  temp.var     <- varBetaGauss(beta     = beta.mc,
+                               cov_mat  = cov.mat,
+                               ind      = ind.vec)
+  ### Term 1
+  term.1.var.r <- temp.var / n.r
+  ### Term 2
+  term.2.var.r <- temp.var / n.o
+  ### Naive var
+  return(list('var.term.1' = term.1.var.r,
+              'var.term.2' = term.2.var.r,
+              'total'      = (term.1.var.r + term.2.var.r)))
+
+}
+
+
+
+
+
+

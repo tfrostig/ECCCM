@@ -4,30 +4,22 @@
 \alias{estimateVarAdd}
 \title{estimateVarAdd - estimation of additional variance}
 \usage{
-estimateVarAdd(
-  beta.mc,
-  beta.omega,
-  x.r,
-  ind.beta.mc,
-  ind.beta.omega,
-  omega,
-  n.o
-)
+estimateVarAdd(beta.mc, cov.list, cov.mat, n.o, n.r, ind.vec, diag.flag = F)
 }
 \arguments{
 \item{beta.mc}{The estimate of coefficient of joint regression (transformed marginal beta)}
 
-\item{beta.omega}{Transformed `beta.mc` basically, just `beta.omega %*% omega`, where omega is the estimated inverse covariance matrix.}
+\item{cov.list}{List of covariance matrices}
 
-\item{x.r}{The reference panel.}
+\item{cov.mat}{Estimated covarinace matrix}
 
-\item{ind.beta.mc}{Indices of which `beta.mc` to consider, in the bayesian scenario determined by vector gamma.}
+\item{n.o}{Number of observation in original study}
 
-\item{ind.beta.omega}{Indices of which `beta.omega` to consider}
+\item{n.r}{Number of observation in reference study}
 
-\item{omega}{- Inverse of estimated covaraince matrix}
+\item{ind.vec}{Indices of which `beta.mc` to consider}
 
-\item{n.o}{- Number of observation in original study}
+\item{diag.flag}{- Flag, to estimate the variance of the covarinace matrix based on the main diagonal, or full estimation.}
 }
 \value{
 A list containing the varius variance terms, including the naive. `total` is the combined added variance from
