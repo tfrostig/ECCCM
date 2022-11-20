@@ -148,21 +148,12 @@ arma::mat findRij(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, List cov_list, 
 
 
 // [[Rcpp::export]]
-arma::mat findRijDiagonal(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, List cov_list, int i, int j) {
-  int p = est_cor_mat.n_cols;
-  arma::mat res = arma::zeros(p, p);
-  for (int k = 0; k < p; k++) {
-      res += findPLambdaij(est_cor_mat, inv_d_sig, i, k) * findCovTwoInd(cov_list, k, k) * findLambdaPij(est_cor_mat, inv_d_sig, k, j);
-    }
-  return res;
-}
-
-// [[Rcpp::export]]
 arma::mat findVarGaussCovInd(arma::mat cov_mat, int i, int j) {
   arma::mat outer_mat = cov_mat.col(j) * cov_mat.col(i).t();
   arma::mat sol = arma::as_scalar(cov_mat(j, i)) * cov_mat + outer_mat;
   return sol;
 }
+
 
 // [[Rcpp::export]]
 arma::mat findRijGauss(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, arma::mat est_cov_mat, int i, int j) {
@@ -175,6 +166,17 @@ arma::mat findRijGauss(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, arma::mat 
   }
   return res;
 }
+
+// [[Rcpp::export]]
+arma::mat findRijDiagonal(arma::mat est_cor_mat, arma::sp_mat inv_d_sig, List cov_list, int i, int j) {
+  int p = est_cor_mat.n_cols;
+  arma::mat res = arma::zeros(p, p);
+  for (int k = 0; k < p; k++) {
+      res += findPLambdaij(est_cor_mat, inv_d_sig, i, k) * findCovTwoInd(cov_list, k, k) * findLambdaPij(est_cor_mat, inv_d_sig, k, j);
+    }
+  return res;
+}
+
 
 // [[Rcpp::export]]
 arma::mat covToCor(arma::mat cov_mat) {
@@ -193,7 +195,7 @@ arma::sp_mat diagSqrtSparse(arma::mat temp_mat) {
 }
 
 // [[Rcpp::export]]
-arma::mat varBeta(arma::vec beta, arma::mat cov_mat, List cov_list, arma::vec ind, int nr) {
+arma::mat varBeta(arma::vec beta, arma::mat cov_mat, List cov_list, arma::vec ind) {
   int p = beta.size();
   int k = ind.size();
   int i_ind = 0;
@@ -209,6 +211,30 @@ arma::mat varBeta(arma::vec beta, arma::mat cov_mat, List cov_list, arma::vec in
     for (int j = 0; j < k; j++) {
       j_ind = ind.at(j);
       sol  +=  beta.at(i_ind) * beta.at(j_ind) * findRij(cor_mat, inv_d_sig, cov_list, i_ind, j_ind);
+    }
+  }
+  return omega * sol * omega;
+}
+
+
+
+// [[Rcpp::export]]
+arma::mat varBetaGauss(arma::vec beta, arma::mat cov_mat, arma::vec ind) {
+  int p = beta.size();
+  int k = ind.size();
+  int i_ind = 0;
+  int j_ind = 0;
+  ind = ind - 1; // indices are from R
+  arma::mat sol          = arma::mat(p, p, fill::zeros);
+  arma::mat cor_mat      = covToCor(cov_mat);
+  arma::sp_mat inv_d_sig = diagSqrtSparse(cov_mat);
+  arma::mat omega        = arma::inv_sympd(cor_mat);
+  //omega = omega.clean(10^-8); // thresholded omega
+  for (int i = 0; i < k; i++) {
+    i_ind = ind.at(i);
+    for (int j = 0; j < k; j++) {
+      j_ind = ind.at(j);
+      sol  +=  beta.at(i_ind) * beta.at(j_ind) * findRijGauss(cor_mat, inv_d_sig, cov_mat, i_ind, j_ind);
     }
   }
   return omega * sol * omega;
@@ -235,30 +261,6 @@ arma::mat varBetaDiag(arma::vec beta, arma::mat cov_mat, List cov_list, arma::ve
   }
   return omega * sol * omega;
 }
-
-// [[Rcpp::export]]
-arma::mat varBetaGauss(arma::vec beta, arma::mat cov_mat, arma::vec ind, int nr) {
-  int p = beta.size();
-  int k = ind.size();
-  int i_ind = 0;
-  int j_ind = 0;
-  ind = ind - 1; // indices are from R
-  arma::mat sol          = arma::mat(p, p, fill::zeros);
-  arma::mat cor_mat      = covToCor(cov_mat);
-  arma::sp_mat inv_d_sig = diagSqrtSparse(cov_mat);
-
-  arma::mat omega        = arma::inv_sympd(cor_mat);
-  //omega = omega.clean(10^-8); // thresholded omega
-  for (int i = 0; i < k; i++) {
-    i_ind = ind.at(i);
-    for (int j = 0; j < k; j++) {
-      j_ind = ind.at(j);
-      sol  +=  beta.at(i_ind) * beta.at(j_ind) * findRijGauss(cor_mat, inv_d_sig, cov_mat, i_ind, j_ind);
-    }
-  }
-  return omega * sol * omega;
-}
-
 
 /*** R
 #### Create E matrix
@@ -467,6 +469,10 @@ full.var[(2 * p + 1):(3 * p), (p + 1):(2 * p)]
 findVarGaussCovInd(cov_mat = cov.mat, 1, 2)
 full.var[(p + 1):(2 * p), (2 * p + 1):(3 * p)]
 
+
+
+
+findRijGauss
 
 ##### Comparing
 (findRij(est_cor_mat = cor(x.ref), inv_d_sig = inv_sig, cov_list = cov.mat.list, i = 1, j = 2) / n.ref)

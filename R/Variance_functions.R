@@ -16,8 +16,7 @@ estimateVarAdd <- function(beta.mc, cov.list, cov.mat, n.o, n.r, ind.vec, diag.f
     temp.var     <- varBeta(beta     = beta.mc,
                             cov_mat  = cov.mat,
                             cov_list = cov.list,
-                            ind = ind.vec,
-                            nr  = n.r)
+                            ind = ind.vec)
   }
   if (diag.flag) {
     temp.var     <- varBetaDiag(beta     = beta.mc,
@@ -47,7 +46,7 @@ estimateVarAdd <- function(beta.mc, cov.list, cov.mat, n.o, n.r, ind.vec, diag.f
 #' @param cov.list.boot Bootstrap of scaled covariance matrices.
 #' @param ind.beta.mc Indices of which `beta.mc` to consider, in the bayesian scenario determined by vector gamma.
 #' @param ind.beta.omega Indices of which `beta.omega` to consider
-#' @param omega - Inverse of estimated covaraince matrix
+#' @param omega - Inverse of estimated covariance matrix
 #' @param n.o - Number of observation in original study
 # #' @param diag.flag - Flag, to estimate the variance of the covarinace matrix based on the main diagonal, or full estimation.
 #' @return A list containing the varius variance terms, including the naive. `total` is the combined added variance from
@@ -58,8 +57,7 @@ estimateVarAddGauss <- function(beta.mc, cov.mat, n.o, n.r, ind.vec) {
   ### Finding the variance of (beta' \prod \Sigma^{-1}) A (beta' prod \Sigma^{-1})
   temp.var     <- varBetaGauss(beta     = beta.mc,
                                cov_mat  = cov.mat,
-                               ind = ind.vec,
-                               nr  = n.r)
+                               ind      = ind.vec)
   ### Term 1
   term.1.var.r <- temp.var / n.r
   ### Term 2

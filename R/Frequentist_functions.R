@@ -23,69 +23,61 @@ analyzeRef <- function(marg.beta.hat,
                        method.filter        = 'none',
                        method.test          = 'BH',
                        qu                   = 0.05,
-                       to.diag              = TRUE) {
+                       to.diag              = FALSE,
+                       is.marg              = TRUE) {
   p   <- ncol(x.r)
   n.r <- nrow(x.r)
   cov.list.r  <- list('cov' = cov(x.r), 'cor' = cor(x.r))
-  marg.to.joint <- marginalToJoint(marg.beta.hat = marg.beta.hat,
-                                   n.o = n.o,
-                                   cor.r = cov.list.r$cor,
-                                   sigma = 1)
-  threshold.beta.est <- rep(0, p)
-  ### Transform Beta to multivariate
-  if (sigma.method == 'conservative') {
-    test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat,
-                        var.beta = marg.to.joint$naive.var.beta.hat,
-                        method   = method.filter)
-    ind.beta.pass                     <- which(test.df[ ,3] < qu)
-    sigma.est                         <- 1
-    threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
+  if (is.marg) {
+    print('Transforming marginal coefficient into conditional')
+    marg.to.joint <- marginalToJoint(marg.beta.hat = marg.beta.hat,
+                                     n.o = n.o,
+                                     cor.r = cov.list.r$cor,
+                                     sigma = 1)
   }
-  if (sigma.method == 'estimate') {
-    sigma.est         <- drop(sqrt(1 - var(x.r %*% marg.to.joint$est.beta.hat)))
-    test.df           <- testCoef(est.beta = marg.to.joint$est.beta.hat,
-                                  var.beta = marg.to.joint$naive.var.beta.hat * sigma.est,
-                                  method   = method.filter)
-    ind.beta.pass <- which(test.df[ ,3] < qu)
-    threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
+  if (!is.marg) {
+    marg.to.joint <- data.frame('est.beta.hat'       = marg.beta.hat,
+                                'naive.var.beta.hat' = diag((1 / n.o) * solve(cov.list.r$cor)))
   }
-  if (sigma.method == 'semi.conservative') {
-    test.df <- testCoef(est.beta = marg.to.joint$est.beta.hat,
-                        var.beta = marg.to.joint$naive.var.beta.hat,
-                        method   = method.filter)
-    ind.beta.pass                     <- which(test.df[ ,3] < qu)
-    threshold.beta.est[ind.beta.pass] <-  marg.to.joint$est.beta.hat[ind.beta.pass]
-    sigma.est         <- drop(sqrt(1 - var(x.r %*% threshold.beta.est)))
-  }
-  if (length(ind.beta.pass) == 0) {
-    return(list(test.correct    = test.df,
+  #### estimating variance and threshold beta
+  threshold.result <- findSigmaThreshold(multi.beta.hat = marg.to.joint$est.beta.hat,
+                                         multi.beta.hat.var = marg.to.joint$naive.var.beta.hat,
+                                         x.r = x.r,
+                                         qu = qu, method.filter = method.filter, sigma.method = sigma.method)
+
+
+  #### dealing with case where non of the coefficients passed
+  if (length(threshold.result$ind.beta.est) == 0) {
+    return(list(test.correct    = threshold.result$test.df,
                 add.var         = NULL,
-                test.naive      = test.df,
+                test.naive      = threshold.result$test.df,
                 var.beta        = c('number.of.coef' = NULL,
                                     'prop.weight'    = NULL),
-                sigma.est       = sigma.est))
+                sigma.est       = threshold.result$sigma.est))
   }
-  if (length(ind.beta.pass) > 0) {
+  if (length(threshold.result$ind.beta.est) > 0) {
+    ### estimating additional variance
     cov.list           <- outerProdRow(x.r)
-    est.var            <- estimateVarAdd(beta.mc        = threshold.beta.est,
+    est.var            <- estimateVarAdd(beta.mc        = threshold.result$threshold.beta,
                                          cov.list       = cov.list,
                                          cov.mat        = cov.list.r$cov,
                                          n.o            = n.o,
                                          n.r            = n.r,
-                                         ind.vec        = ind.beta.pass,
+                                         ind.vec        = threshold.result$ind.beta.est,
                                          diag.flag      = to.diag)
-
-    added.var       <- marg.to.joint$naive.var.beta.hat + diag(est.var$total)
-    test.correct.df <- testCoef(est.beta = threshold.beta.est,
+    ### corrected testing of coeffcients
+    added.var       <- threshold.result$sigma.est^2 * marg.to.joint$naive.var.beta.hat + diag(est.var$total)
+    test.correct.df <- testCoef(est.beta = threshold.result$threshold.beta,
                                 var.beta = added.var,
                                 method   = method.test)
-
+    ### weight of non-thresholded coefficient out of all original
+    prop <- sum(threshold.result$test.df[threshold.result$ind.beta.est, 3]^2) / sum(threshold.result$test.df[ ,3]^2)
     return(list(test.correct                = test.correct.df,
                 add.var                     = est.var$total,
-                test.naive                  = test.df,
-                var.beta                    = c('number.of.coef' = length(ind.beta.pass),
-                                                'prop.weight'    = sum(test.df[ind.beta.pass, 3]^2) / sum(test.df[ ,3]^2)),
-                sigma                       = sigma.est))
+                test.naive                  = threshold.result$test.df,
+                var.beta                    = c('number.of.coef' = length(threshold.result$ind.beta.pass),
+                                                'prop.weight'    = prop),
+                sigma                       = threshold.result$sigma.est))
   }
 }
 
@@ -234,6 +226,7 @@ analyzeRefGauss<- function(marg.beta.hat,
                                    n.o         = n.o,
                                    n.r         = n.r,
                                    ind.vec     = ind.beta.pass)
+
     test.correct.df <- testCoef(est.beta = threshold.beta.est,
                                 var.beta = marg.to.joint$naive.var.beta.hat + diag(est.var$total),
                                 method   = method.test)
@@ -247,5 +240,37 @@ analyzeRefGauss<- function(marg.beta.hat,
 
 
 
-
+### find variance according to specification
+findSigmaThreshold <- function(multi.beta.hat, multi.beta.hat.var, x.r, qu, method.filter, sigma.method) {
+  threshold.beta.est <- rep(0, length(multi.beta.hat))
+  ### Transform Beta to multivariate
+  if (sigma.method == 'conservative') {
+    test.df <- testCoef(est.beta = multi.beta.hat,
+                        var.beta = multi.beta.hat.var,
+                        method   = method.filter)
+    ind.beta.pass                     <- which(test.df[ ,3] < qu)
+    sigma.est                         <- 1
+    threshold.beta.est[ind.beta.pass] <-  multi.beta.hat[ind.beta.pass]
+  }
+  if (sigma.method == 'estimate') {
+    sigma.est         <- drop(sqrt(1 - var(x.r %*% multi.beta.hat)))
+    test.df           <- testCoef(est.beta = multi.beta.hat,
+                                  var.beta = multi.beta.hat.var * sigma.est,
+                                  method   = method.filter)
+    ind.beta.pass <- which(test.df[ ,3] < qu)
+    threshold.beta.est[ind.beta.pass] <-  multi.beta.hat[ind.beta.pass]
+  }
+  if (sigma.method == 'semi.conservative') {
+    test.df <- testCoef(est.beta = multi.beta.hat,
+                        var.beta = multi.beta.hat.var,
+                        method   = method.filter)
+    ind.beta.pass                     <- which(test.df[ ,3] < qu)
+    threshold.beta.est[ind.beta.pass] <-  multi.beta.hat[ind.beta.pass]
+    sigma.est         <- drop(sqrt(1 - var(x.r %*% threshold.beta.est)))
+  }
+  return(list('test.df'        = test.df,
+              'threshold.beta' = threshold.beta.est,
+              'ind.beta.est'   = ind.beta.pass,
+              'sigma.est'      = sigma.est))
+}
 

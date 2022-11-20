@@ -12,7 +12,8 @@ analyzeRef(
   method.filter = "none",
   method.test = "BH",
   qu = 0.05,
-  to.diag = TRUE
+  to.diag = FALSE,
+  is.marg = TRUE
 )
 }
 \arguments{
