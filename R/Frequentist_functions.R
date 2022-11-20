@@ -111,7 +111,7 @@ testCoef <- function(est.beta, var.beta, method = 'BH') {
 #' @return list of covariance matrix and inverse covariance matrix
 #' @export
 
-covMatMaker <- function(x.r, method.threshold, cv.threshold, threshold.seq) {
+covMatMaker <- function(x.r, method.threshold = 'none', cv.threshold, threshold.seq) {
   n.r <- nrow(x.r)
   if (method.threshold == 'soft') {
     threshold.para <- CovTools::CovEst.soft(x.r, thr = threshold.seq, nCV = cv.threshold)
